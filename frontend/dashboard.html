@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
+            </div>
+        </div>
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>New features coming soon</div>
+                <div class="promo-desc">Freshness detector, recipe suggestions, and more food-related features</div>
+            </div>
+            <div id="promo-img">
+                <i class="fa fa-mobile-alt" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+        <!-- Tabs -->
+        <div id="dashboard-tabs">
+            <button class="tab-btn active" id="tab-fav">Favorites</button>
+        </div>
+        <!-- Quick Banking Actions -->
+        <div id="quick-actions">
+            <div class="action-btn"><i class="fa fa-comments"></i><span>Nutribot</span></div>
+            <div class="action-btn"><i class="fa fa-history"></i><span>History</span></div>
+            <div class="action-btn"><i class="fa fa-camera"></i><span>Photos</span></div>
+            <div class="action-btn"><i class="fa fa-file-invoice"></i><span>Report</span></div>
+        </div>
+        <!-- Recipes Card -->
+        <div id="recipes-card">
+            <div id="recipes-img">
+                <i class="fa fa-gift" style="font-size:2rem;color:#F26522;"></i>
+            </div>
+            <div id="recipes-text">
+                <div>Recipes</div>
+                <div class="recipes-desc">Discover new dishes and cooking inspiration</div>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+        <div class="nav-item active"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
+        <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item"><i class="fa fa-question-circle"></i><span>Help</span></div>
+        <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html> 

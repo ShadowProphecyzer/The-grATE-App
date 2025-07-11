@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder - Scanner</title>
+    <link rel="stylesheet" href="scanner.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="scanner-body">
+    <div id="scanner-container">
+        <!-- Header -->
+        <div id="scanner-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
+            </div>
+        </div>
+        
+        <!-- New Feature Section Card -->
+        <div id="scanner-feature-card">
+            <div id="scanner-feature-text">
+                <div>Scan The Thai FDA Code</div>
+                <div class="scanner-feature-desc">The FDA code is usually on the back of the packaging. Rotate to find the code.</div>
+            </div>
+            <div id="scanner-feature-img">
+                <i class="fa fa-magic" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+    </div>
+    <!-- QR Scanner Area -->
+    <div id="qr-scanner">
+        <div class="scanner-frame">
+            <video id="qr-video" autoplay muted playsinline></video>
+            <canvas id="qr-canvas" style="display: none;"></canvas>
+            <div class="scanner-line"></div>
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+        </div>
+        <div class="scanner-text">Position QR code within frame</div>
+    </div>
+    <!-- Photo Button -->
+    <button id="photo-button">
+        <i class="fa fa-camera"></i>
+    </button>
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+        <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-lightbulb"></i><span>Flashlight</span></div>
+        <div class="nav-item scan active"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item"><i class="fa fa-images"></i><span>Photos</span></div>
+        <div class="nav-item"><i class="fa fa-camera"></i><span>Camera</span></div>
+    </div>
+
+    <script src="scanner.js"></script>
+</body>
+</html> 

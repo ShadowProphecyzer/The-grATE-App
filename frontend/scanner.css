@@ -1,0 +1,497 @@
+html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+body#scanner-body {
+    background: #b3b1ab;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    min-height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+#scanner-container {
+    width: 100%;
+    max-width: 400px;
+    max-height: 100vh;
+    background: #f3c892;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.16);
+    padding: 0 0 80px 0;
+    margin-top: 0;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+#scanner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 20px 8px 20px;
+    background: #F26522;
+    border-radius: 24px 24px 0 0;
+    color: #fff;
+}
+#scanner-header i {
+    color: #fff !important;
+}
+
+#greeting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+#greeting #user-name {
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+#header-icons {
+    display: flex;
+    gap: 16px;
+    font-size: 1.2rem;
+}
+
+#promo-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: 18px;
+    margin: 18px 16px 10px 16px;
+    padding: 18px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+}
+
+#promo-text {
+    flex: 1;
+}
+
+#promo-text div:first-child {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1a2340;
+}
+
+.promo-desc {
+    font-size: 0.95rem;
+    color: #888;
+    margin: 4px 0 10px 0;
+}
+
+#see-more-btn {
+    background: #F26522;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#see-more-btn:hover {
+    background: #d94e0f;
+}
+
+#promo-img {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+}
+
+#quick-balance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 16px 10px 16px;
+    padding: 10px 16px;
+    font-size: 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+
+#quick-balance-row button {
+    background: none;
+    color: #F26522;
+    border: 1.5px solid #F26522;
+    border-radius: 8px;
+    padding: 4px 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+#quick-balance-row button:hover {
+    background: #F26522;
+    color: #fff;
+}
+
+#dashboard-tabs {
+    display: flex;
+    margin: 0 16px 10px 16px;
+    gap: 8px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: #fff;
+    color: #1a2340;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    transition: color 0.2s, border 0.2s;
+}
+.tab-btn.active {
+    color: #F26522;
+    border-bottom: 2.5px solid #F26522;
+    background: #fffbe9;
+}
+
+#quick-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 16px 10px 16px;
+}
+
+.action-btn {
+    flex: 1;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 4px rgba(242,101,34,0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 10px 0;
+    font-size: 0.95rem;
+    color: #1a2340;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    border: none;
+    gap: 8px;
+}
+.action-btn i {
+    color: #F26522 !important;
+    font-size: 1.4rem;
+}
+.action-btn:hover {
+    box-shadow: 0 2px 8px rgba(242,101,34,0.13);
+}
+.action-btn span {
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+#recipes-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 16px;
+    margin: 10px 16px 0 16px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+
+#recipes-img {
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+}
+
+#recipes-text div:first-child {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1a2340;
+}
+.recipes-desc {
+    font-size: 0.95rem;
+    color: #888;
+}
+
+/* QR Scanner Styles */
+#qr-scanner {
+    position: fixed;
+    bottom: 220px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 50;
+}
+
+/* Photo Button Styles */
+#photo-button {
+    position: fixed;
+    bottom: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: #F26522;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3);
+    z-index: 60;
+    transition: all 0.2s ease;
+}
+
+#photo-button:hover {
+    background: #d94e0f;
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 16px rgba(242, 101, 34, 0.4);
+}
+
+#photo-button:active {
+    transform: translateX(-50%) scale(0.95);
+}
+
+#photo-button i {
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.scanner-frame {
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    position: relative;
+    background: rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#qr-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 18px;
+}
+
+#qr-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #F26522, transparent);
+    animation: scan 2s linear infinite;
+    border-radius: 2px;
+}
+
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+.corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 3px solid #F26522;
+}
+
+.top-left {
+    top: -3px;
+    left: -3px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 15px;
+}
+
+.top-right {
+    top: -3px;
+    right: -3px;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: 15px;
+}
+
+.bottom-left {
+    bottom: -3px;
+    left: -3px;
+    border-right: none;
+    border-top: none;
+    border-bottom-left-radius: 15px;
+}
+
+.bottom-right {
+    bottom: -3px;
+    right: -3px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 15px;
+}
+
+.scanner-text {
+    margin-top: 20px;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Navigation Styles */
+.nav-item:not(.active) {
+    color: #1a2340 !important;
+}
+
+.nav-item.active {
+    color: #1a2340 !important;
+}
+
+.nav-item.scan {
+    color: #F26522 !important;
+}
+
+.nav-item.scan.active {
+    color: #F26522 !important;
+}
+
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.18);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 8px 0 4px 0;
+    z-index: 100;
+}
+#bottom-nav::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 80px;
+    height: 40px;
+    background: #fff;
+    border-top-left-radius: 80px;
+    border-top-right-radius: 80px;
+    z-index: 1;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #1a2340;
+    font-size: 0.95rem;
+    cursor: pointer;
+    gap: 2px;
+    flex: 1;
+    transition: color 0.2s;
+}
+.nav-item i {
+    color: #F26522 !important;
+    font-size: 1.3rem;
+}
+.nav-item.active {
+    color: #1a2340;
+}
+
+/* Make Scan button larger and match nav icon style, keep elevated position */
+.nav-item.scan {
+    position: relative;
+    z-index: 2;
+    background: none;
+    border-radius: 0;
+    width: auto;
+    height: auto;
+    margin-top: -24px;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #F26522 !important;
+    border: none;
+}
+.nav-item.scan i {
+    font-size: 1.3rem;
+    color: #F26522 !important;
+}
+
+#scanner-feature-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: 18px;
+    margin: 18px 16px 10px 16px;
+    padding: 18px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+}
+
+#scanner-feature-text {
+    flex: 1;
+}
+
+#scanner-feature-text div:first-child {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1a2340;
+}
+
+.scanner-feature-desc {
+    font-size: 0.95rem;
+    color: #888;
+    margin: 4px 0 10px 0;
+}
+
+#scanner-feature-img {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 500px) {
+    #scanner-container, #bottom-nav {
+        max-width: 100vw;
+        border-radius: 0;
+    }
+} 
