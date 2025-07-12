@@ -52,4 +52,30 @@ if (scanBtn) {
     scanBtn.addEventListener('click', function() {
         window.location.href = 'scanner.html';
     });
-} 
+}
+
+// Add functionality for quick action buttons
+const actionBtns = document.querySelectorAll('.action-btn');
+actionBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        const text = this.querySelector('span').textContent.trim();
+        
+        switch(text) {
+            case 'Photos':
+                window.location.href = 'photos.html';
+                break;
+            case 'Nutribot':
+                // TODO: Implement nutribot functionality
+                console.log('Nutribot clicked');
+                break;
+            case 'History':
+                // TODO: Implement history functionality
+                console.log('History clicked');
+                break;
+            case 'Report':
+                // TODO: Implement report functionality
+                console.log('Report clicked');
+                break;
+        }
+    });
+}); 

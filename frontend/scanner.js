@@ -413,22 +413,53 @@ function takePhoto() {
     // Show loading overlay
     showLoadingOverlay();
     
-    // Save photo to backend
+    // Get username for file naming
     const username = localStorage.getItem('username');
-    if (username) {
-        fetch(`/api/user/${encodeURIComponent(username)}/photos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageBase64 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            // Optionally handle response
-        })
-        .catch(err => {
-            console.error('Error saving photo:', err);
-        });
+    if (!username) {
+        console.error('No username found');
+        hideLoadingOverlay();
+        return;
     }
+    
+    // Create timestamp for unique filename
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `${username}_scanned_${timestamp}.png`;
+    
+    // Save photo to backend (user's photos collection)
+    fetch(`/api/user/${encodeURIComponent(username)}/photos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            imageBase64,
+            filename: filename,
+            source: 'scanner'
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Photo saved to user collection:', data);
+    })
+    .catch(err => {
+        console.error('Error saving photo to user collection:', err);
+    });
+    
+    // Also save copy to temp folder for processing
+    fetch('/api/processor/save-to-temp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            imageBase64,
+            filename: filename,
+            username: username
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Photo saved to temp folder for processing:', data);
+    })
+    .catch(err => {
+        console.error('Error saving photo to temp folder:', err);
+    });
     
     // Show loading for 5 seconds, then redirect
     setTimeout(() => {

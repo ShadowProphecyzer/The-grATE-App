@@ -1,21 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { MongoClient } = require('mongodb');
 const bcrypt = require('bcrypt');
-const config = require('./config');
-require('dotenv').config();
+const config = require('../shared/config');
+const DatabaseManager = require('../shared/database');
 
 const app = express();
 const PORT = config.PORT;
 const path = require('path');
 
-// MongoDB Atlas connection
-const MONGODB_URI = config.MONGODB_URI;
-const DB_NAME = config.DB_NAME;
-const COLLECTION_NAME = config.COLLECTION_NAME;
-
-let db;
+// Database manager
+const dbManager = new DatabaseManager();
 
 // Username validation function
 function validateUsername(username) {
@@ -35,16 +30,14 @@ function validatePassword(password) {
 }
 
 // Helper function to get a user's collection
-function getUserCollection(username) {
-    return db.collection(username);
+async function getUserCollection(username) {
+    return await dbManager.getUserCollection(username, 'profile');
 }
 
 // Connect to MongoDB
 async function connectToDatabase() {
     try {
-        const client = new MongoClient(MONGODB_URI);
-        await client.connect();
-        db = client.db(DB_NAME);
+        await dbManager.connect();
         console.log('Connected to MongoDB Atlas');
     } catch (error) {
         console.error('Failed to connect to MongoDB:', error);
@@ -84,13 +77,14 @@ app.post('/api/auth/signup', async (req, res) => {
         }
 
         // Check if username already exists
-        const existingUsername = await db.collection(COLLECTION_NAME).findOne({ username });
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const existingUsername = await usersCollection.findOne({ username });
         if (existingUsername) {
             return res.status(409).json({ message: 'Username already exists. Please choose a different username.' });
         }
 
         // Check if email already exists
-        const existingUser = await db.collection(COLLECTION_NAME).findOne({ email });
+        const existingUser = await usersCollection.findOne({ email });
         if (existingUser) {
             return res.status(409).json({ message: 'Email already registered.' });
         }
@@ -108,12 +102,12 @@ app.post('/api/auth/signup', async (req, res) => {
         };
 
         // Insert user into database
-        await db.collection(COLLECTION_NAME).insertOne(user);
+        await usersCollection.insertOne(user);
 
         // Create a database for the user (named after their username)
         try {
-            const userDb = (new MongoClient(MONGODB_URI)).db(username);
-            await userDb.collection('profile').insertOne({
+            const userCollection = await getUserCollection(username);
+            await userCollection.insertOne({
                 username,
                 email,
                 createdAt: new Date(),
@@ -142,7 +136,8 @@ app.post('/api/auth/signin', async (req, res) => {
         }
 
         // Find user by email
-        const user = await db.collection(COLLECTION_NAME).findOne({ email });
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ email });
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password.' });
         }
@@ -167,7 +162,8 @@ app.post('/api/auth/signin', async (req, res) => {
 app.get('/api/user/:email', async (req, res) => {
     try {
         const { email } = req.params;
-        const user = await db.collection(COLLECTION_NAME).findOne(
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne(
             { email }, 
             { projection: { password: 0 } } // Exclude password from response
         );
@@ -190,13 +186,14 @@ app.post('/api/user/:username/data', async (req, res) => {
         const data = req.body;
         
         // Verify user exists
-        const user = await db.collection(COLLECTION_NAME).findOne({ username });
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ username });
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
         
         // Add data to user's collection
-        const userCollection = getUserCollection(username);
+        const userCollection = await getUserCollection(username);
         const result = await userCollection.insertOne({
             ...data,
             createdAt: new Date()
@@ -218,13 +215,14 @@ app.get('/api/user/:username/data', async (req, res) => {
         const { username } = req.params;
         
         // Verify user exists
-        const user = await db.collection(COLLECTION_NAME).findOne({ username });
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ username });
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
         
         // Get data from user's collection
-        const userCollection = getUserCollection(username);
+        const userCollection = await getUserCollection(username);
         const data = await userCollection.find({}).toArray();
         
         res.json({ 
@@ -241,27 +239,99 @@ app.get('/api/user/:username/data', async (req, res) => {
 app.post('/api/user/:username/photos', async (req, res) => {
     try {
         const { username } = req.params;
-        const { imageBase64 } = req.body;
+        const { imageBase64, filename, source } = req.body;
         if (!imageBase64) {
             return res.status(400).json({ message: 'No image provided.' });
         }
         // Verify user exists in central users collection
-        const user = await db.collection(COLLECTION_NAME).findOne({ username });
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ username });
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
         // Save photo in user's personal database
-        const userClient = new MongoClient(MONGODB_URI);
-        await userClient.connect();
-        const userDb = userClient.db(username);
-        await userDb.collection('photos').insertOne({
+        const userCollection = await dbManager.getUserCollection(username, 'photos');
+        await userCollection.insertOne({
             imageBase64,
+            filename: filename || 'scanned_photo.png',
+            source: source || 'scanner',
             uploadedAt: new Date()
         });
-        await userClient.close();
         res.status(201).json({ message: 'Photo saved successfully.' });
     } catch (error) {
         console.error('Error saving photo:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
+// Save photo to temp folder for processing
+app.post('/api/processor/save-to-temp', async (req, res) => {
+    try {
+        const { imageBase64, filename, username } = req.body;
+        
+        if (!imageBase64 || !filename || !username) {
+            return res.status(400).json({ message: 'Missing required fields: imageBase64, filename, username' });
+        }
+        
+        // Verify user exists
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        
+        // Convert base64 to buffer
+        const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
+        
+        // Ensure temp directory exists
+        const fs = require('fs');
+        const path = require('path');
+        const tempDir = path.join(__dirname, '../processor/temp');
+        
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+        
+        // Save file to temp directory
+        const filePath = path.join(tempDir, filename);
+        fs.writeFileSync(filePath, buffer);
+        
+        console.log(`Photo saved to temp folder: ${filename}`);
+        res.status(201).json({ 
+            message: 'Photo saved to temp folder successfully.',
+            filename: filename,
+            path: filePath
+        });
+        
+    } catch (error) {
+        console.error('Error saving photo to temp folder:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
+// Get user's photos
+app.get('/api/user/:username/photos', async (req, res) => {
+    try {
+        const { username } = req.params;
+        
+        // Verify user exists
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        
+        // Get photos from user's collection
+        const userCollection = await dbManager.getUserCollection(username, 'photos');
+        const photos = await userCollection.find({}).sort({ uploadedAt: -1 }).toArray();
+        
+        res.json({ 
+            username,
+            photos: photos
+        });
+    } catch (error) {
+        console.error('Get user photos error:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
 });
