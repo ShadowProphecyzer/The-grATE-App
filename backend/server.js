@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const config = require('../shared/config');
-const DatabaseManager = require('../shared/database');
+const config = require('./config');
+const DatabaseManager = require('./database');
 
 const app = express();
 const PORT = config.PORT;
@@ -102,21 +102,19 @@ app.post('/api/auth/signup', async (req, res) => {
             createdAt: new Date()
         };
 
-        // Insert user into database
+        // Insert user into main users collection
         await usersCollection.insertOne(user);
 
-        // Create a database for the user (named after their username)
+        // Create per-user database and collections
         try {
-            const userCollection = await getUserCollection(username);
-            await userCollection.insertOne({
-                username,
-                email,
-                createdAt: new Date(),
-                // You can add more default profile fields here
-            });
-            console.log(`Created database and profile collection for user: ${username}`);
+            const userDb = await dbManager.getUserDatabase(username);
+            // Create collections with an initial document in each
+            await userDb.collection('history').insertOne({ initialized: true, createdAt: new Date() });
+            await userDb.collection('saved_recipes').insertOne({ initialized: true, createdAt: new Date() });
+            await userDb.collection('chatbot').insertOne({ initialized: true, createdAt: new Date() });
+            console.log(`Created per-user database and collections for user: ${username}`);
         } catch (error) {
-            console.error(`Error creating database for user ${username}:`, error);
+            console.error(`Error creating per-user database/collections for user ${username}:`, error);
             // Don't fail the registration if database creation fails
         }
 
@@ -265,51 +263,7 @@ app.post('/api/user/:username/photos', async (req, res) => {
     }
 });
 
-// Save photo to temp folder for processing
-app.post('/api/processor/save-to-temp', async (req, res) => {
-    try {
-        const { imageBase64, filename, username } = req.body;
-        
-        if (!imageBase64 || !filename || !username) {
-            return res.status(400).json({ message: 'Missing required fields: imageBase64, filename, username' });
-        }
-        
-        // Verify user exists
-        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
-        const user = await usersCollection.findOne({ username });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-        
-        // Convert base64 to buffer
-        const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-        const buffer = Buffer.from(base64Data, 'base64');
-        
-        // Ensure temp directory exists
-        const fs = require('fs');
-        const path = require('path');
-        const tempDir = path.join(__dirname, '../processor/temp');
-        
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
-        
-        // Save file to temp directory
-        const filePath = path.join(tempDir, filename);
-        fs.writeFileSync(filePath, buffer);
-        
-        console.log(`Photo saved to temp folder: ${filename}`);
-        res.status(201).json({ 
-            message: 'Photo saved to temp folder successfully.',
-            filename: filename,
-            path: filePath
-        });
-        
-    } catch (error) {
-        console.error('Error saving photo to temp folder:', error);
-        res.status(500).json({ message: 'Internal server error.' });
-    }
-});
+
 
 // Get user's photos
 app.get('/api/user/:username/photos', async (req, res) => {
@@ -337,38 +291,7 @@ app.get('/api/user/:username/photos', async (req, res) => {
     }
 });
 
-// Get latest AI analysis results for user
-app.get('/api/user/:username/latest-analysis', async (req, res) => {
-    try {
-        const { username } = req.params;
-        
-        // Verify user exists
-        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
-        const user = await usersCollection.findOne({ username });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-        
-        // Get latest analysis from user's collection
-        const userCollection = await dbManager.getUserCollection(username, 'image_analysis');
-        const latestAnalysis = await userCollection.findOne(
-            {}, 
-            { sort: { processedAt: -1 } }
-        );
-        
-        if (!latestAnalysis) {
-            return res.status(404).json({ message: 'No analysis found for this user.' });
-        }
-        
-        res.json({ 
-            username,
-            analysis: latestAnalysis
-        });
-    } catch (error) {
-        console.error('Get latest analysis error:', error);
-        res.status(500).json({ message: 'Internal server error.' });
-    }
-});
+
 
 // Initialize database connection and start server
 async function startServer() {

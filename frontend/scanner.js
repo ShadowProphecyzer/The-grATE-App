@@ -374,7 +374,7 @@ function showLoadingOverlay() {
         overlay.innerHTML = `
             <div style="display:flex;flex-direction:column;align-items:center;">
                 <div class="spinner" style="border: 8px solid #f3f3f3; border-top: 8px solid #F26522; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;"></div>
-                <div style="color:#fff; margin-top:20px; font-size:1.5rem;">Saving photo...</div>
+                <div style="color:#fff; margin-top:20px; font-size:1.5rem;">Photo saved!</div>
             </div>
             <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
         `;
@@ -443,29 +443,11 @@ function takePhoto() {
         console.error('Error saving photo to user collection:', err);
     });
     
-    // Also save copy to temp folder for processing
-    fetch('/api/processor/save-to-temp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            imageBase64,
-            filename: filename,
-            username: username
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Photo saved to temp folder for processing:', data);
-    })
-    .catch(err => {
-        console.error('Error saving photo to temp folder:', err);
-    });
-    
-    // Show loading for 5 seconds, then redirect
+    // Show loading for 3 seconds, then show success
     setTimeout(() => {
         hideLoadingOverlay();
-        window.location.href = 'product.html';
-    }, 5000);
+        showPhotoFeedback();
+    }, 3000);
 }
 
 function showPhotoFeedback() {
