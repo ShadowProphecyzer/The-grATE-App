@@ -7,6 +7,7 @@ const DatabaseManager = require('../shared/database');
 
 const app = express();
 const PORT = config.PORT;
+const COLLECTION_NAME = config.COLLECTION_NAME;
 const path = require('path');
 
 // Database manager
@@ -332,6 +333,39 @@ app.get('/api/user/:username/photos', async (req, res) => {
         });
     } catch (error) {
         console.error('Get user photos error:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
+// Get latest AI analysis results for user
+app.get('/api/user/:username/latest-analysis', async (req, res) => {
+    try {
+        const { username } = req.params;
+        
+        // Verify user exists
+        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
+        const user = await usersCollection.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        
+        // Get latest analysis from user's collection
+        const userCollection = await dbManager.getUserCollection(username, 'image_analysis');
+        const latestAnalysis = await userCollection.findOne(
+            {}, 
+            { sort: { processedAt: -1 } }
+        );
+        
+        if (!latestAnalysis) {
+            return res.status(404).json({ message: 'No analysis found for this user.' });
+        }
+        
+        res.json({ 
+            username,
+            analysis: latestAnalysis
+        });
+    } catch (error) {
+        console.error('Get latest analysis error:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
 });

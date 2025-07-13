@@ -9,6 +9,7 @@ class FileProcessor {
     constructor() {
         this.tempDir = path.join(__dirname, 'temp');
         this.processingDir = path.join(__dirname, 'processing');
+        this.outputDir = path.join(__dirname, 'output');
         this.isProcessing = false;
         this.checkInterval = config.PROCESSING_DELAY;
         
@@ -230,6 +231,44 @@ class FileProcessor {
         }
     }
 
+    // Save AI analysis results to output directory
+    async saveResultsToOutput(username, originalImagePath, ocrText, firstAIAnalysis, secondAIAnalysis) {
+        try {
+            const baseName = path.parse(path.basename(originalImagePath)).name;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            // Save OCR text to output
+            const ocrOutputPath = path.join(this.outputDir, `${baseName}_ocr_${timestamp}.txt`);
+            fs.writeFileSync(ocrOutputPath, ocrText);
+            console.log(`OCR text saved to output: ${ocrOutputPath}`);
+            
+            // Save first AI analysis to output
+            if (firstAIAnalysis) {
+                const firstAIOutputPath = path.join(this.outputDir, `${baseName}_first_ai_${timestamp}.txt`);
+                fs.writeFileSync(firstAIOutputPath, firstAIAnalysis);
+                console.log(`First AI analysis saved to output: ${firstAIOutputPath}`);
+            }
+            
+            // Save second AI analysis to output
+            if (secondAIAnalysis) {
+                const secondAIOutputPath = path.join(this.outputDir, `${baseName}_second_ai_${timestamp}.txt`);
+                fs.writeFileSync(secondAIOutputPath, secondAIAnalysis);
+                console.log(`Second AI analysis saved to output: ${secondAIOutputPath}`);
+            }
+            
+            // Save combined results to output
+            const combinedOutputPath = path.join(this.outputDir, `${baseName}_combined_analysis_${timestamp}.txt`);
+            const combinedContent = `=== OCR EXTRACTED TEXT ===\n${ocrText}\n\n=== FIRST AI ANALYSIS ===\n${firstAIAnalysis || 'No first AI analysis available'}\n\n=== SECOND AI ANALYSIS ===\n${secondAIAnalysis || 'No second AI analysis available'}\n\n=== PROCESSING INFO ===\nProcessed at: ${new Date().toISOString()}\nUsername: ${username}\nOriginal file: ${path.basename(originalImagePath)}`;
+            fs.writeFileSync(combinedOutputPath, combinedContent);
+            console.log(`Combined analysis saved to output: ${combinedOutputPath}`);
+            
+            return true;
+        } catch (error) {
+            console.error(`Error saving results to output directory:`, error.message);
+            return false;
+        }
+    }
+
     // Send text to first AI for processing
     async sendToAI(textFilename, originalImagePath, ocrText) {
         if (!this.firstAIClient) {
@@ -287,8 +326,16 @@ class FileProcessor {
                 } else {
                     console.log(`AI analyses completed but failed to store in database for user: ${username}`);
                 }
+                
+                // Save results to output directory
+                const outputSaved = await this.saveResultsToOutput(username, originalImagePath, ocrText, firstAIResponse, secondAIResponse);
+                if (outputSaved) {
+                    console.log(`AI analysis results saved to output directory for user: ${username}`);
+                } else {
+                    console.log(`Failed to save AI analysis results to output directory for user: ${username}`);
+                }
             } else {
-                console.log('Could not extract username from filename, skipping database storage');
+                console.log('Could not extract username from filename, skipping database and output storage');
             }
             
             return true;
@@ -377,12 +424,14 @@ class FileProcessor {
 
             if (success) {
                 console.log(`Processing: ${fileToMove}`);
+                console.log(`📁 File moved from temp to processing directory`);
                 
-                            // Perform OCR on the file
-            const ocrResult = await this.performOCR(fileToMove);
+                // Perform OCR on the file
+                const ocrResult = await this.performOCR(fileToMove);
             
             if (ocrResult) {
                 console.log(`OCR processing completed for ${fileToMove}`);
+                console.log(`📝 OCR text saved to processing directory: ${ocrResult}`);
                 
                 // Read the OCR text file
                 const ocrTextPath = path.join(this.processingDir, ocrResult);
@@ -390,20 +439,26 @@ class FileProcessor {
                 const originalImagePath = path.join(this.processingDir, fileToMove);
                 
                 // Send OCR text to AI for processing (in background)
+                console.log(`🤖 Sending OCR text to AI for analysis...`);
                 this.sendToAI(ocrResult, originalImagePath, ocrText).then(aiSuccess => {
                     if (aiSuccess) {
-                        console.log(`AI processing completed for ${ocrResult}`);
+                        console.log(`✅ AI processing completed for ${ocrResult}`);
+                        console.log(`📤 AI results saved to output directory`);
                     } else {
-                        console.log(`AI processing failed for ${ocrResult}`);
+                        console.log(`❌ AI processing failed for ${ocrResult}`);
                     }
                     
-                    // Clean up OCR text file
-                    try {
-                        fs.unlinkSync(ocrTextPath);
-                        console.log(`Deleted OCR text file from processing: ${ocrResult}`);
-                    } catch (error) {
-                        console.error(`Error deleting OCR text file:`, error.message);
-                    }
+                    // Keep OCR text file in processing directory for a while, then clean up
+                    setTimeout(() => {
+                        try {
+                            if (fs.existsSync(ocrTextPath)) {
+                                fs.unlinkSync(ocrTextPath);
+                                console.log(`Cleaned up OCR text file from processing: ${ocrResult}`);
+                            }
+                        } catch (error) {
+                            console.error(`Error cleaning up OCR text file:`, error.message);
+                        }
+                    }, 30000); // Keep for 30 seconds
                 }).catch(error => {
                     console.error(`Error in AI processing for ${ocrResult}:`, error.message);
                 });
