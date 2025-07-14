@@ -298,6 +298,16 @@ app.get('/api/user/:username/photos', async (req, res) => {
     }
 });
 
+// Contact form endpoint
+app.post('/api/contact', (req, res) => {
+    const { name, email, message } = req.body;
+    if (!name || !email || !message) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+    // Log the contact message (replace with email/DB logic as needed)
+    console.log('Contact form submission:', { name, email, message });
+    res.json({ message: 'Message received.' });
+});
 
 
 // Initialize database connection and start server

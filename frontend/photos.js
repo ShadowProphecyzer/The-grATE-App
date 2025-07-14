@@ -1,11 +1,17 @@
 // Photos page functionality
+console.log('[Photos] Script loaded');
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[Photos] DOMContentLoaded');
     loadUserPhotos();
+    setGreeting();
+    setupNavigation();
 });
 
 async function loadUserPhotos() {
+    console.log('[Photos] Loading user photos...');
     try {
         const username = localStorage.getItem('username');
+        console.log('[Photos] Username:', username);
         if (!username) {
             showEmptyState('Please log in to view your photos');
             return;
@@ -13,6 +19,7 @@ async function loadUserPhotos() {
 
         const response = await fetch(`/api/user/${encodeURIComponent(username)}/photos`);
         const data = await response.json();
+        console.log('[Photos] API response:', data);
 
         if (response.ok) {
             displayPhotos(data.photos);
@@ -20,12 +27,13 @@ async function loadUserPhotos() {
             showEmptyState('Error loading photos: ' + data.message);
         }
     } catch (error) {
-        console.error('Error loading photos:', error);
+        console.error('[Photos] Error loading photos:', error);
         showEmptyState('Error loading photos. Please try again.');
     }
 }
 
 function displayPhotos(photos) {
+    console.log('[Photos] Displaying photos:', photos);
     const container = document.getElementById('photos-container');
     
     if (!photos || photos.length === 0) {
@@ -46,6 +54,7 @@ function displayPhotos(photos) {
 }
 
 function createPhotoCard(photo) {
+    console.log('[Photos] Creating photo card:', photo);
     const card = document.createElement('div');
     card.className = 'photo-card';
 
@@ -84,6 +93,7 @@ function createPhotoCard(photo) {
 }
 
 function showEmptyState(message) {
+    console.log('[Photos] Showing empty state:', message);
     const container = document.getElementById('photos-container');
     container.innerHTML = `
         <div class="empty-state">
@@ -97,11 +107,41 @@ function showEmptyState(message) {
     `;
 }
 
-// Add navigation functionality
-function goToScanner() {
-    window.location.href = 'scanner.html';
+function setGreeting() {
+    const username = localStorage.getItem('username');
+    if (username) {
+        const greetingDiv = document.getElementById('greeting');
+        if (greetingDiv) {
+            greetingDiv.innerHTML = '<i class="fa fa-lock" style="color:#F26522;"></i> <span>Hello</span> <span id="user-name">' + username + '</span>';
+        }
+    }
 }
 
-function goToDashboard() {
-    window.location.href = 'dashboard.html';
+function setupNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            const text = this.querySelector('span').textContent.trim();
+            switch(text) {
+                case 'Home':
+                    window.location.href = 'dashboard.html';
+                    break;
+                case 'Market':
+                    window.location.href = 'market.html';
+                    break;
+                case 'Photos':
+                    // Already on photos page
+                    break;
+                case 'Help':
+                    window.location.href = 'help.html';
+                    break;
+                case 'Logout':
+                    localStorage.removeItem('username');
+                    window.location.href = 'mainscreen.html';
+                    break;
+            }
+        });
+    });
 } 

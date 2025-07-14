@@ -1,0 +1,78 @@
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.18);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 8px 0 4px 0;
+    z-index: 100;
+}
+#bottom-nav::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 80px;
+    height: 40px;
+    background: #fff;
+    border-top-left-radius: 80px;
+    border-top-right-radius: 80px;
+    z-index: 1;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #1a2340;
+    font-size: 0.95rem;
+    cursor: pointer;
+    gap: 2px;
+    flex: 1;
+    transition: color 0.2s;
+}
+.nav-item i {
+    color: #F26522 !important;
+    font-size: 1.3rem;
+}
+.nav-item.active {
+    color: #F26522;
+}
+
+/* Make Scan button larger and match nav icon style, keep elevated position */
+.nav-item.scan {
+    position: relative;
+    z-index: 2;
+    background: none;
+    border-radius: 0;
+    width: auto;
+    height: auto;
+    margin-top: -24px;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #1a2340;
+    border: none;
+}
+.nav-item.scan i {
+    font-size: 1.3rem;
+    color: #F26522 !important;
+}
+
+@media (max-width: 500px) {
+    #photos-container, #bottom-nav {
+        max-width: 100vw;
+        border-radius: 0;
+    }
+} 

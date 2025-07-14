@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Photos - grATE App</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <title>The grATE App - Nutribot</title>
+    <link rel="stylesheet" href="nutribot.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="dashboard-body">
-    <div id="dashboard-container">
+<body id="nutribot-body">
+    <div id="nutribot-container">
         <!-- Header -->
-        <div id="dashboard-header">
+        <div id="nutribot-header">
             <div id="greeting">
                 <i class="fa fa-lock"></i>
                 <span>Hello</span>
@@ -20,21 +20,22 @@
                 <i class="fa fa-cog"></i>
             </div>
         </div>
-        <!-- Page Title -->
-        <div id="promo-card">
-            <div id="promo-text">
-                <div>My Photos</div>
-                <div class="promo-desc">View all your scanned photos</div>
+        <!-- Feature Card -->
+        <div id="nutribot-feature-card">
+            <div id="nutribot-feature-text">
+                <div>Nutribot</div>
+                <div class="nutribot-feature-desc">Your AI-powered nutrition assistant</div>
             </div>
-            <div id="promo-img">
-                <i class="fa fa-camera" style="font-size:2.5rem;color:#F26522;"></i>
+            <div id="nutribot-feature-img">
+                <i class="fa fa-comments" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
         </div>
-        <!-- Photos Content -->
-        <div id="photos-container">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Loading your photos...</p>
+        <!-- Placeholder Content -->
+        <div id="nutribot-content">
+            <div class="empty-state">
+                <i class="fa fa-comments"></i>
+                <h3>Nutribot Coming Soon</h3>
+                <p>Ask questions about food, health, and nutrition!</p>
             </div>
         </div>
     </div>
@@ -43,9 +44,9 @@
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
         <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
         <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
-        <div class="nav-item active"><i class="fa fa-camera"></i><span>Photos</span></div>
+        <div class="nav-item active"><i class="fa fa-comments"></i><span>Nutribot</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
-    <script src="photos.js"></script>
+    <script src="nutribot.js"></script>
 </body>
 </html> 

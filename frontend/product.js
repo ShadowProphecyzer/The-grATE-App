@@ -140,6 +140,9 @@ function setupNavigation() {
                 case 'Products':
                     // Already on products page
                     break;
+                case 'Help':
+                    window.location.href = 'help.html';
+                    break;
                 case 'Logout':
                     logout();
                     break;

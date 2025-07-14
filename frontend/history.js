@@ -1,14 +1,14 @@
-// Market page functionality
-console.log('[Market] Script loaded');
+// History page functionality
+console.log('[History] Script loaded');
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Market] DOMContentLoaded');
+    console.log('[History] DOMContentLoaded');
     setupNavigation();
     setGreeting();
 });
 
 // Navigation functionality
 function setupNavigation() {
-    console.log('[Market] Setting up navigation');
+    console.log('[History] Setting up navigation');
     const navItems = document.querySelectorAll('.nav-item');
 
     navItems.forEach(item => {
@@ -16,13 +16,13 @@ function setupNavigation() {
             navItems.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
             const text = this.querySelector('span').textContent.trim();
-            console.log(`[Market] Navigation clicked: ${text}`);
+            console.log(`[History] Navigation clicked: ${text}`);
             switch(text) {
                 case 'Home':
                     window.location.href = 'dashboard.html';
                     break;
                 case 'Market':
-                    // Already on market page
+                    window.location.href = 'market.html';
                     break;
                 case 'Scan':
                     window.location.href = 'scanner.html';
@@ -44,7 +44,7 @@ function setupNavigation() {
 // Set greeting with username
 function setGreeting() {
     const username = localStorage.getItem('username');
-    console.log('[Market] Setting greeting for user:', username);
+    console.log('[History] Setting greeting for user:', username);
     if (username) {
         const greetingDiv = document.getElementById('greeting');
         if (greetingDiv) {
@@ -55,7 +55,7 @@ function setGreeting() {
 
 // Logout functionality
 function logout() {
-    console.log('[Market] Logging out user');
+    console.log('[History] Logging out user');
     localStorage.removeItem('username');
     window.location.href = 'mainscreen.html';
 } 

@@ -59,11 +59,14 @@ navItems.forEach(item => {
             case 'Flashlight':
                 toggleFlashlight();
                 break;
-            case 'Photos':
-                openPhotoGallery();
+            case 'Scan':
+                // Already on scan page
                 break;
-            case 'Camera':
+            case 'Flip Camera':
                 flipCamera();
+                break;
+            case 'Logout':
+                window.location.href = 'mainscreen.html';
                 break;
         }
     });
@@ -190,7 +193,7 @@ async function flipCamera() {
         
         // Update camera icon to show current mode
         const cameraBtn = document.querySelector('.nav-item span');
-        if (cameraBtn && cameraBtn.textContent.trim() === 'Camera') {
+        if (cameraBtn && cameraBtn.textContent.trim() === 'Flip Camera') {
             const icon = cameraBtn.parentElement.querySelector('i');
             if (currentFacingMode === 'environment') {
                 icon.classList.remove('fa-camera-retro');
@@ -231,7 +234,7 @@ async function flipCamera() {
         
         // Reset camera icon to previous state
         const cameraBtn = document.querySelector('.nav-item span');
-        if (cameraBtn && cameraBtn.textContent.trim() === 'Camera') {
+        if (cameraBtn && cameraBtn.textContent.trim() === 'Flip Camera') {
             const icon = cameraBtn.parentElement.querySelector('i');
             if (currentFacingMode === 'environment') {
                 icon.classList.remove('fa-camera-retro');

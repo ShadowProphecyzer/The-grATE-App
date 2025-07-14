@@ -36,22 +36,51 @@ window.addEventListener('DOMContentLoaded', function() {
             greetingDiv.innerHTML = '<i class="fa fa-lock" style="color:#F26522;"></i> <span>Hello</span> <span id="user-name">' + username + '</span>';
         }
     }
+    
+    // Setup navigation functionality
+    setupNavigation();
 });
 
-// Redirect to mainscreen on logout
-const logoutBtn = document.querySelector('.nav-item span:nth-child(2)');
-if (logoutBtn && logoutBtn.textContent.trim() === 'Logout') {
-    logoutBtn.parentElement.addEventListener('click', function() {
-        window.location.href = 'mainscreen.html';
+// Navigation functionality
+function setupNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove active class from all nav items
+            navItems.forEach(nav => nav.classList.remove('active'));
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Handle navigation based on text content
+            const text = this.querySelector('span').textContent.trim();
+            
+            switch(text) {
+                case 'Home':
+                    // Already on home page
+                    break;
+                case 'Market':
+                    window.location.href = 'market.html';
+                    break;
+                case 'Scan':
+                    window.location.href = 'scanner.html';
+                    break;
+                case 'Help':
+                    window.location.href = 'help.html';
+                    break;
+                case 'Logout':
+                    logout();
+                    break;
+            }
+        });
     });
 }
 
-// Redirect to scanner.html on scan button click
-const scanBtn = document.querySelector('.nav-item.scan');
-if (scanBtn) {
-    scanBtn.addEventListener('click', function() {
-        window.location.href = 'scanner.html';
-    });
+// Logout functionality
+function logout() {
+    localStorage.removeItem('username');
+    window.location.href = 'mainscreen.html';
 }
 
 // Add functionality for quick action buttons
@@ -65,16 +94,13 @@ actionBtns.forEach(btn => {
                 window.location.href = 'photos.html';
                 break;
             case 'Nutribot':
-                // TODO: Implement nutribot functionality
-                console.log('Nutribot clicked');
+                window.location.href = 'nutribot.html';
                 break;
             case 'History':
-                // TODO: Implement history functionality
-                console.log('History clicked');
+                window.location.href = 'history.html';
                 break;
             case 'Report':
-                // TODO: Implement report functionality
-                console.log('Report clicked');
+                window.location.href = 'report.html';
                 break;
         }
     });

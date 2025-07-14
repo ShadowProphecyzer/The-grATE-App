@@ -179,6 +179,6 @@ document.getElementById('signup-form').addEventListener('submit', async function
     }
 });
 
-document.getElementById('return-main-btn').addEventListener('click', function() {
+document.getElementById('return-main-link').addEventListener('click', function() {
     window.location.href = 'mainscreen.html';
 });
