@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The grATE App - Products</title>
+    <link rel="stylesheet" href="product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="product-body">
+    <div id="product-container">
+        <!-- Header -->
+        <div id="product-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
+            </div>
+        </div>
+        
+        <!-- Feature Card -->
+        <div id="product-feature-card">
+            <div id="product-feature-text">
+                <div>Product Gallery</div>
+                <div class="product-feature-desc">View all your scanned products and their details</div>
+            </div>
+            <div id="product-feature-img">
+                <i class="fa fa-box" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+        
+        <!-- Products Container -->
+        <div id="products-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading your products...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+        <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
+        <div class="nav-item"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item active"><i class="fa fa-box"></i><span>Products</span></div>
+        <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
+    </div>
+
+    <script src="product.js"></script>
+</body>
+</html> 

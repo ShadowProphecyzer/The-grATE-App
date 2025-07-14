@@ -8,16 +8,13 @@ class DatabaseManager {
     }
 
     async connect() {
-        try {
+        if (!this.client) {
             this.client = new MongoClient(config.MONGODB_URI);
             await this.client.connect();
             this.db = this.client.db(config.DB_NAME);
             console.log('Connected to MongoDB');
-            return true;
-        } catch (error) {
-            console.error('Failed to connect to MongoDB:', error);
-            return false;
         }
+        return this.client;
     }
 
     async disconnect() {

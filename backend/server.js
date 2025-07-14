@@ -4,11 +4,17 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const config = require('./config');
 const DatabaseManager = require('./database');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = config.PORT;
 const COLLECTION_NAME = config.COLLECTION_NAME;
-const path = require('path');
+const QUEUE_DIR = path.join(__dirname, '../processor/queue');
+
+// Ensure queue directory exists
+if (!fs.existsSync(QUEUE_DIR)) fs.mkdirSync(QUEUE_DIR, { recursive: true });
 
 // Database manager
 const dbManager = new DatabaseManager();
@@ -235,30 +241,31 @@ app.get('/api/user/:username/data', async (req, res) => {
 });
 
 // Add photo to user's personal database
-app.post('/api/user/:username/photos', async (req, res) => {
+app.post('/api/user/:username/upload', multer({ storage: multer.memoryStorage() }).single('photo'), async (req, res) => {
     try {
         const { username } = req.params;
-        const { imageBase64, filename, source } = req.body;
-        if (!imageBase64) {
-            return res.status(400).json({ message: 'No image provided.' });
+        const file = req.file;
+        if (!file) {
+            return res.status(400).json({ message: 'No photo uploaded.' });
         }
-        // Verify user exists in central users collection
-        const usersCollection = dbManager.getCollection(COLLECTION_NAME);
-        const user = await usersCollection.findOne({ username });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-        // Save photo in user's personal database
-        const userCollection = await dbManager.getUserCollection(username, 'photos');
-        await userCollection.insertOne({
-            imageBase64,
-            filename: filename || 'scanned_photo.png',
-            source: source || 'scanner',
-            uploadedAt: new Date()
+        // Save file to queue folder
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `${username}_${timestamp}.jpg`;
+        const filePath = path.join(QUEUE_DIR, filename);
+        fs.writeFileSync(filePath, file.buffer);
+        // Store base64 in user's history collection
+        const userHistory = await dbManager.getUserCollection(username, 'history');
+        const base64 = file.buffer.toString('base64');
+        await userHistory.insertOne({
+            image_base64: base64,
+            file_path: filePath,
+            timestamp: new Date(),
+            status: 'queued',
+            step: 'upload',
         });
-        res.status(201).json({ message: 'Photo saved successfully.' });
+        res.status(201).json({ message: 'Photo uploaded and queued for processing.' });
     } catch (error) {
-        console.error('Error saving photo:', error);
+        console.error('Photo upload error:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
 });
