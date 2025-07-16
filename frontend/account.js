@@ -125,6 +125,7 @@ document.getElementById('signin-form').addEventListener('submit', async function
             if (data.username) {
                 localStorage.setItem('username', data.username);
                 localStorage.setItem('email', email);
+                localStorage.setItem('chatHash', data.chatHash); // Add this line
                 console.log('Set username and email in localStorage:', data.username, email);
             }
             setTimeout(() => { window.location.href = '/dashboard.html'; }, 1200);

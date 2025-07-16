@@ -8,6 +8,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto'); // Add this line
 
 const app = express();
 const PORT = config.PORT;
@@ -156,9 +157,15 @@ app.post('/api/auth/signin', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password.' });
         }
 
+        // Generate HMAC hash for chat bubble authentication
+        const secret = config.CHAT_SECRET;
+        const userId = user.username;
+        const hash = crypto.createHmac('sha256', secret).update(userId).digest('hex');
+
         res.json({ 
             message: 'Sign-in successful.', 
-            username: user.username 
+            username: user.username,
+            chatHash: hash // Add hash to response
         });
     } catch (error) {
         console.error('Signin error:', error);
@@ -356,7 +363,7 @@ app.post('/api/contact', async (req, res) => {
 // Report form endpoint
 app.post('/api/report', multer({ storage: multer.memoryStorage() }).array('photos', 3), async (req, res) => {
     try {
-        const { fda, issue, location } = req.body;
+        const { fda, issue, location, username, email } = req.body;
         const files = req.files || [];
         if (!fda || !issue || !location) {
             return res.status(400).json({ message: 'All fields are required.' });
@@ -375,9 +382,16 @@ app.post('/api/report', multer({ storage: multer.memoryStorage() }).array('photo
             issue,
             location,
             images: images.map(img => ({ originalname: img.originalname, mimetype: img.mimetype, base64: img.base64 })),
-            createdAt: new Date()
+            createdAt: new Date(),
+            username: username || null,
+            email: email || null
         };
         await reportsCollection.insertOne(reportDoc);
+        // Also save in user's own reports collection if username is provided
+        if (username) {
+            const userReportsCollection = await dbManager.getUserCollection(username, 'reports');
+            await userReportsCollection.insertOne(reportDoc);
+        }
         // Email the report
         const transporter = nodemailer.createTransport({
             service: 'gmail',

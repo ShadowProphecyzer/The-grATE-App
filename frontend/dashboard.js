@@ -94,8 +94,8 @@ actionBtns.forEach(btn => {
         const text = this.querySelector('span').textContent.trim();
         
         switch(text) {
-            case 'Photos':
-                window.location.href = 'photos.html';
+            case 'Community':
+                window.location.href = 'community.html';
                 break;
             case 'Nutribot':
                 window.location.href = 'nutribot.html';
@@ -160,3 +160,49 @@ if (settingsCog && settingsPanel && closeSettingsBtn) {
         if (e.target === settingsPanel) settingsPanel.style.display = 'none';
     });
 } 
+
+// Attach logout to new header icon
+window.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+});
+
+// Revert Chatbase chat bubble CSS to fixed position, bottom right, scale 0.35, outside nav bar
+window.addEventListener('DOMContentLoaded', function() {
+    const username = localStorage.getItem('username');
+    const chatHash = localStorage.getItem('chatHash');
+    if (username && chatHash) {
+        (function(){
+            if(!window.chatbase||window.chatbase("getState")!=="initialized"){
+                window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};
+                window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})
+            }
+            const onLoad=function(){
+                const script=document.createElement("script");
+                script.src="https://www.chatbase.co/embed.min.js";
+                script.id="Iu25vtQ6ivvPlDF1hx7ih";
+                script.domain="www.chatbase.co";
+                document.body.appendChild(script)
+            };
+            if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
+        })();
+        // Optionally, pass user info to Chatbase if supported
+        // window.chatbase('setUser', { id: username, hash: chatHash });
+        // Add custom CSS for chat bubble (fixed, bottom right)
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #Iu25vtQ6ivvPlDF1hx7ih {
+                z-index: 9999 !important;
+                position: fixed !important;
+                right: 0px !important;
+                bottom: 0px !important;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+                transform: scale(0.35); /* Scale down to 35% */
+                transform-origin: bottom right;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}); 

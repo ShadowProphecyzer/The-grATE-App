@@ -18,5 +18,6 @@ module.exports = {
 
     // Gmail credentials for nodemailer
     GMAIL_USER: process.env.GMAIL_USER,
-    GMAIL_PASS: process.env.GMAIL_PASS
+    GMAIL_PASS: process.env.GMAIL_PASS,
+    CHAT_SECRET: process.env.CHAT_SECRET
 }; 

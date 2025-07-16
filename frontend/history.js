@@ -12,6 +12,44 @@ document.addEventListener('DOMContentLoaded', function() {
     setupModal();
 });
 
+// Inject Chatbase chat bubble if user is logged in
+window.addEventListener('DOMContentLoaded', function() {
+    const username = localStorage.getItem('username');
+    const chatHash = localStorage.getItem('chatHash');
+    if (username && chatHash) {
+        (function(){
+            if(!window.chatbase||window.chatbase("getState")!=="initialized"){
+                window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};
+                window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})
+            }
+            const onLoad=function(){
+                const script=document.createElement("script");
+                script.src="https://www.chatbase.co/embed.min.js";
+                script.id="Iu25vtQ6ivvPlDF1hx7ih";
+                script.domain="www.chatbase.co";
+                document.body.appendChild(script)
+            };
+            if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
+        })();
+        // Optionally, pass user info to Chatbase if supported
+        // window.chatbase('setUser', { id: username, hash: chatHash });
+        // Add custom CSS for chat bubble
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #Iu25vtQ6ivvPlDF1hx7ih {
+                z-index: 9999 !important;
+                bottom: 24px !important;
+                right: 24px !important;
+                position: fixed !important;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+                transform: scale(0.8); /* Scale down to 80% */
+                transform-origin: bottom right;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+});
+
 // Navigation functionality
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
