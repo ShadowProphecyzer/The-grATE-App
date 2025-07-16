@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body id="history-body">
+    <div class="settings-panel" style="display:none;">
+        <div class="settings-panel-content">
+            <button class="close-settings-btn">&times;</button>
+            <h2>History Page Instructions</h2>
+            <ul>
+                <li>View your scan and report history here.</li>
+            </ul>
+        </div>
+    </div>
     <div id="history-main-bg">
         <div id="history-card">
             <div id="scanner-header">
@@ -32,7 +41,7 @@
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
         <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
         <div class="nav-item"><i class="fa fa-qrcode"></i><span>Scan</span></div>
-        <div class="nav-item"><i class="fa fa-question-circle"></i><span>Help</span></div>
+        <div class="nav-item active"><i class="fa fa-history"></i><span>History</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
     <script src="history.js"></script>

@@ -299,9 +299,209 @@ body#dashboard-body {
     color: #F26522 !important;
 }
 
+.three-menu-nav {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 16px 10px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+    height: 38px;
+    overflow: visible;
+}
+.menu-item {
+    flex: 1;
+    text-align: center;
+    padding: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #1a2340;
+    cursor: pointer;
+    position: relative;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, font-weight 0.2s;
+    z-index: 2;
+}
+.menu-item.active {
+    color: #F26522;
+    font-weight: 700;
+}
+.menu-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 33.33%;
+    height: 2px;
+    background: #F26522;
+    border-radius: 2px;
+    transition: left 0.3s cubic-bezier(.4,0,.2,1);
+    z-index: 1;
+    pointer-events: none;
+}
+.menu-item:nth-child(1).active ~ .menu-underline {
+    left: 0%;
+}
+.menu-item:nth-child(2).active ~ .menu-underline {
+    left: 33.33%;
+}
+.menu-item:nth-child(3).active ~ .menu-underline {
+    left: 66.66%;
+}
 @media (max-width: 500px) {
     #dashboard-container, #bottom-nav {
         max-width: 100vw;
         border-radius: 0;
     }
+    .three-menu-nav {
+        margin: 0 4px 10px 4px;
+        height: 32px;
+    }
+    .menu-item {
+        font-size: 0.95rem;
+    }
+    .menu-underline {
+        height: 1.5px;
+    }
+} 
+
+.contact-form {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    padding: 24px 20px 20px 20px;
+    margin: 24px auto 0 auto;
+    max-width: 340px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    position: relative;
+}
+.contact-form h3 {
+    margin-bottom: 8px;
+    color: #F26522;
+    font-size: 1.1rem;
+    text-align: center;
+    font-weight: 700;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.form-group label {
+    font-size: 0.97rem;
+    color: #1a2340;
+    font-weight: 500;
+}
+.form-group input,
+.form-group textarea {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    background: #f9f6f2;
+    color: #1a2340;
+    transition: border-color 0.2s;
+    resize: none;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #F26522;
+}
+.contact-btn {
+    background: #F26522;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+}
+.contact-btn:hover {
+    background: #d94e0f;
+}
+#contact-status {
+    text-align: center;
+    margin-top: 6px;
+    font-size: 0.97rem;
+    min-height: 18px;
+}
+#help-content {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 0;
+    height: auto;
+}
+body#dashboard-body, #dashboard-container {
+    overflow: hidden !important;
+} 
+
+.settings-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.settings-panel-content {
+    background: #fffbe9;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    padding: 32px 28px 24px 28px;
+    max-width: 340px;
+    width: 90vw;
+    text-align: left;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.settings-panel-content h2 {
+    color: #F26522;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.settings-panel-content ul {
+    margin: 0 0 0 18px;
+    padding: 0;
+    color: #1a2340;
+    font-size: 1rem;
+}
+.close-settings-btn {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #F26522;
+    cursor: pointer;
+    font-weight: 700;
+    z-index: 10;
+}
+.settings-panel::-webkit-scrollbar {
+    display: none;
 } 

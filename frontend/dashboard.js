@@ -1,3 +1,7 @@
+// Authentication check
+if (!localStorage.getItem('username')) {
+    window.location.href = 'account.html';
+}
 // Tab switching
 const tabQuick = document.getElementById('tab-quick');
 const tabFav = document.getElementById('tab-fav');
@@ -105,3 +109,54 @@ actionBtns.forEach(btn => {
         }
     });
 }); 
+
+// 3-menu navigation logic
+const menuItems = document.querySelectorAll('.three-menu-nav .menu-item');
+const menuUnderline = document.querySelector('.three-menu-nav .menu-underline');
+const quickActionsSection = document.getElementById('quick-actions');
+const recipesCardSection = document.getElementById('recipes-card');
+function showSection(section) {
+    // Promo card always visible
+    if (section === 'favourites') {
+        quickActionsSection && (quickActionsSection.style.display = '');
+        recipesCardSection && (recipesCardSection.style.display = '');
+    } else {
+        quickActionsSection && (quickActionsSection.style.display = 'none');
+        recipesCardSection && (recipesCardSection.style.display = 'none');
+    }
+}
+
+menuItems.forEach((item, idx) => {
+    item.addEventListener('click', function() {
+        menuItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+        // Move underline
+        if (menuUnderline) {
+            menuUnderline.style.left = (idx * 33.33) + '%';
+        }
+        // Show/hide content
+        if (idx === 1) {
+            showSection('favourites');
+        } else {
+            showSection('placeholder');
+        }
+    });
+});
+// Show only Favourites by default
+showSection('favourites'); 
+
+// Settings panel logic
+const settingsCog = document.getElementById('settings-cog');
+const settingsPanel = document.getElementById('settings-panel');
+const closeSettingsBtn = document.getElementById('close-settings-panel');
+if (settingsCog && settingsPanel && closeSettingsBtn) {
+    settingsCog.addEventListener('click', function() {
+        settingsPanel.style.display = 'flex';
+    });
+    closeSettingsBtn.addEventListener('click', function() {
+        settingsPanel.style.display = 'none';
+    });
+    settingsPanel.addEventListener('click', function(e) {
+        if (e.target === settingsPanel) settingsPanel.style.display = 'none';
+    });
+} 

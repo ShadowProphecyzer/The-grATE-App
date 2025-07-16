@@ -7,11 +7,14 @@ const DatabaseManager = require('./database');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = config.PORT;
 const COLLECTION_NAME = config.COLLECTION_NAME;
 const QUEUE_DIR = path.join(__dirname, '../processor/queue');
+const GMAIL_USER = config.GMAIL_USER;
+const GMAIL_PASS = config.GMAIL_PASS;
 
 // Ensure queue directory exists
 if (!fs.existsSync(QUEUE_DIR)) fs.mkdirSync(QUEUE_DIR, { recursive: true });
@@ -299,14 +302,109 @@ app.get('/api/user/:username/photos', async (req, res) => {
 });
 
 // Contact form endpoint
-app.post('/api/contact', (req, res) => {
-    const { name, email, message } = req.body;
-    if (!name || !email || !message) {
+app.post('/api/contact', async (req, res) => {
+    const { username, email, problem, description } = req.body;
+    if (!username || !email || !problem || !description) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
-    // Log the contact message (replace with email/DB logic as needed)
-    console.log('Contact form submission:', { name, email, message });
-    res.json({ message: 'Message received.' });
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email address.' });
+    }
+    // Problem validation (at least 2 chars)
+    if (problem.trim().length < 2) {
+        return res.status(400).json({ message: 'Problem overview must be at least 2 characters.' });
+    }
+    // Description validation (at least 10 chars)
+    if (description.trim().length < 10) {
+        return res.status(400).json({ message: 'Description must be at least 10 characters.' });
+    }
+    try {
+        // Store contact in 'contacts' collection in the main (generic) database
+        const contactsCollection = dbManager.getCollection('contacts');
+        await contactsCollection.insertOne({
+            username,
+            email,
+            problem,
+            description,
+            createdAt: new Date()
+        });
+        // Create transporter
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: GMAIL_USER,
+                pass: GMAIL_PASS
+            }
+        });
+        // Send mail
+        await transporter.sendMail({
+            from: `grATE App Contact <${GMAIL_USER}>`,
+            to: GMAIL_USER,
+            subject: `Contact Form Submission from ${username}`,
+            text: `Username: ${username}\nEmail: ${email}\nProblem: ${problem}\nDescription: ${description}`,
+            replyTo: email
+        });
+        res.json({ message: 'Message sent! We will get back to you soon.' });
+    } catch (error) {
+        console.error('Contact form email error:', error);
+        res.status(500).json({ message: 'Failed to send message. Please try again later.' });
+    }
+});
+
+// Report form endpoint
+app.post('/api/report', multer({ storage: multer.memoryStorage() }).array('photos', 3), async (req, res) => {
+    try {
+        const { fda, issue, location } = req.body;
+        const files = req.files || [];
+        if (!fda || !issue || !location) {
+            return res.status(400).json({ message: 'All fields are required.' });
+        }
+        // Prepare images as base64 strings
+        const images = files.map(file => ({
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+            buffer: file.buffer,
+            base64: file.buffer.toString('base64')
+        }));
+        // Store report in 'reports' collection
+        const reportsCollection = dbManager.getCollection('reports');
+        const reportDoc = {
+            fda,
+            issue,
+            location,
+            images: images.map(img => ({ originalname: img.originalname, mimetype: img.mimetype, base64: img.base64 })),
+            createdAt: new Date()
+        };
+        await reportsCollection.insertOne(reportDoc);
+        // Email the report
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: GMAIL_USER,
+                pass: GMAIL_PASS
+            }
+        });
+        // Prepare attachments for email
+        const attachments = images.map((img, idx) => ({
+            filename: img.originalname || `image${idx+1}.jpg`,
+            content: img.buffer,
+            encoding: 'base64',
+            contentType: img.mimetype
+        }));
+        await transporter.sendMail({
+            from: `grATE App Report <${GMAIL_USER}>`,
+            to: GMAIL_USER,
+            subject: `Product Report Submission (FDA: ${fda})`,
+            text: `FDA Tag: ${fda}\nIssue: ${issue}\nLocation: ${location}\nImages attached: ${images.length}`,
+            attachments
+        });
+        res.json({ message: 'Report submitted successfully.' });
+    } catch (error) {
+        console.error('Report form email error:', error);
+        res.status(500).json({ message: 'Failed to submit report. Please try again later.' });
+    }
 });
 
 // --- User Scan History Endpoint ---

@@ -579,3 +579,57 @@ body#scanner-body {
         width: 100px;
     }
 } 
+
+/* Settings panel styles (copied from dashboard.css) */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.settings-panel-content {
+    background: #fffbe9;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    padding: 32px 28px 24px 28px;
+    max-width: 340px;
+    width: 90vw;
+    text-align: left;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.settings-panel-content h2 {
+    color: #F26522;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.settings-panel-content ul {
+    margin: 0 0 0 18px;
+    padding: 0;
+    color: #1a2340;
+    font-size: 1rem;
+}
+.close-settings-btn {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #F26522;
+    cursor: pointer;
+    font-weight: 700;
+    z-index: 10;
+}
+.settings-panel::-webkit-scrollbar {
+    display: none;
+} 

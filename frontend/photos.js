@@ -1,3 +1,7 @@
+// Authentication check
+if (!localStorage.getItem('username')) {
+    window.location.href = 'account.html';
+}
 // Photos page functionality
 console.log('[Photos] Script loaded');
 document.addEventListener('DOMContentLoaded', function() {
@@ -143,5 +147,22 @@ function setupNavigation() {
                     break;
             }
         });
+    });
+} 
+
+// Settings panel logic (header icon, fallback)
+let settingsCog = document.querySelector('#header-icons .fa-cog');
+if (!settingsCog) settingsCog = document.querySelector('.fa-cog');
+const settingsPanel = document.querySelector('.settings-panel');
+const closeSettingsBtn = document.querySelector('.close-settings-btn');
+if (settingsCog && settingsPanel && closeSettingsBtn) {
+    settingsCog.addEventListener('click', function() {
+        settingsPanel.style.display = 'flex';
+    });
+    closeSettingsBtn.addEventListener('click', function() {
+        settingsPanel.style.display = 'none';
+    });
+    settingsPanel.addEventListener('click', function(e) {
+        if (e.target === settingsPanel) settingsPanel.style.display = 'none';
     });
 } 

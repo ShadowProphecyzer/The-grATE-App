@@ -14,5 +14,9 @@ module.exports = {
     PORT: process.env.PORT || 3000,
     
     // CORS Configuration
-    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000'
+    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
+
+    // Gmail credentials for nodemailer
+    GMAIL_USER: process.env.GMAIL_USER,
+    GMAIL_PASS: process.env.GMAIL_PASS
 }; 

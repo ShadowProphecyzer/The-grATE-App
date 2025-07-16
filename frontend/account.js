@@ -124,6 +124,8 @@ document.getElementById('signin-form').addEventListener('submit', async function
             messageDiv.textContent = 'Sign-in successful! Redirecting...';
             if (data.username) {
                 localStorage.setItem('username', data.username);
+                localStorage.setItem('email', email);
+                console.log('Set username and email in localStorage:', data.username, email);
             }
             setTimeout(() => { window.location.href = '/dashboard.html'; }, 1200);
         } else {
@@ -166,6 +168,8 @@ document.getElementById('signup-form').addEventListener('submit', async function
         if (res.ok) {
             messageDiv.style.color = '#2e7d32';
             messageDiv.textContent = 'Sign-up successful! Please sign in.';
+            // Store email in localStorage for immediate use
+            localStorage.setItem('email', email);
             setTimeout(() => {
                 document.getElementById('toggle-signin').click();
             }, 1200);
@@ -182,3 +186,20 @@ document.getElementById('signup-form').addEventListener('submit', async function
 document.getElementById('return-main-link').addEventListener('click', function() {
     window.location.href = 'mainscreen.html';
 });
+
+// Settings panel logic (header icon, fallback)
+let settingsCog = document.querySelector('#header-icons .fa-cog');
+if (!settingsCog) settingsCog = document.querySelector('.fa-cog');
+const settingsPanel = document.querySelector('.settings-panel');
+const closeSettingsBtn = document.querySelector('.close-settings-btn');
+if (settingsCog && settingsPanel && closeSettingsBtn) {
+    settingsCog.addEventListener('click', function() {
+        settingsPanel.style.display = 'flex';
+    });
+    closeSettingsBtn.addEventListener('click', function() {
+        settingsPanel.style.display = 'none';
+    });
+    settingsPanel.addEventListener('click', function(e) {
+        if (e.target === settingsPanel) settingsPanel.style.display = 'none';
+    });
+}

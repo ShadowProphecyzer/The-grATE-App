@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body id="report-body">
+    <div class="settings-panel" style="display:none;">
+        <div class="settings-panel-content">
+            <button class="close-settings-btn">&times;</button>
+            <h2>Report Page Instructions</h2>
+            <ul>
+                <li>Report food safety issues by filling out the form below.</li>
+                <li>Upload up to 3 images and provide details for faster response.</li>
+            </ul>
+        </div>
+    </div>
     <div id="report-container">
         <!-- Header -->
         <div id="report-header">
@@ -32,11 +42,28 @@
         </div>
         <!-- Placeholder Content -->
         <div id="report-content">
-            <div class="empty-state">
-                <i class="fa fa-file-invoice"></i>
-                <h3>Report Coming Soon</h3>
-                <p>Let us know about any issues or feedback you have!</p>
-            </div>
+            <form id="report-form" class="contact-form" enctype="multipart/form-data">
+                <h3>Submit a Report</h3>
+                <div class="form-group">
+                    <input type="file" id="report-photo" name="photos" accept="image/*" multiple required style="padding: 16px; border: 2px dashed #F26522; background: #fffbe9; text-align: center;" />
+                    <small style="color:#888; margin-top:4px;">Upload up to 3 images of the product.</small>
+                    <small style="color:#888; margin-top:4px;">Please upload one photo of the scanner output</small>
+                </div>
+                <div class="form-group">
+                    <label for="report-fda">FDA Tag</label>
+                    <input type="text" id="report-fda" name="fda" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="report-issue">Issue</label>
+                    <input type="text" id="report-issue" name="issue" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="report-location">Location</label>
+                    <input type="text" id="report-location" name="location" required autocomplete="off">
+                </div>
+                <button type="submit" class="contact-btn">Send Report</button>
+                <div id="report-status"></div>
+            </form>
         </div>
     </div>
     <!-- Bottom Navigation -->

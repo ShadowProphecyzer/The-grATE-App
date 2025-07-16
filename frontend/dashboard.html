@@ -17,7 +17,18 @@
                 <span id="user-name"></span>
             </div>
             <div id="header-icons">
-                <i class="fa fa-cog"></i>
+                <i class="fa fa-cog" id="settings-cog"></i>
+            </div>
+        </div>
+        <div id="settings-panel" class="settings-panel" style="display:none;">
+            <div class="settings-panel-content">
+                <button id="close-settings-panel" class="close-settings-btn">&times;</button>
+                <h2>Dashboard Instructions</h2>
+                <ul>
+                    <li>Welcome to your dashboard! Here you can access all main features.</li>
+                    <li>Use the navigation bar at the bottom to switch between pages.</li>
+                    <li>Click on any quick action to jump to that feature.</li>
+                </ul>
             </div>
         </div>
         <!-- Promo Card -->
@@ -31,8 +42,11 @@
             </div>
         </div>
         <!-- Tabs -->
-        <div id="dashboard-tabs">
-            <button class="tab-btn active" id="tab-fav">Favorites</button>
+        <div id="dashboard-tabs" class="three-menu-nav">
+            <div class="menu-item" id="menu-profile">Profile</div>
+            <div class="menu-item active" id="menu-favourites">Favourites</div>
+            <div class="menu-item" id="menu-tools">All Tools</div>
+            <div class="menu-underline"></div>
         </div>
         <!-- Quick Banking Actions -->
         <div id="quick-actions">
@@ -47,7 +61,7 @@
                 <i class="fa fa-gift" style="font-size:2rem;color:#F26522;"></i>
             </div>
             <div id="recipes-text">
-                <div>Recipes</div>
+                <div>Explore Recipes</div>
                 <div class="recipes-desc">Discover new dishes and cooking inspiration</div>
             </div>
         </div>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The grATE App - Help</title>
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="help.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body id="dashboard-body">
@@ -30,26 +31,27 @@
                 <i class="fa fa-question-circle" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
         </div>
+        <div class="settings-panel" style="display:none;">
+            <div class="settings-panel-content">
+                <button class="close-settings-btn">&times;</button>
+                <h2>Help Page Instructions</h2>
+                <ul>
+                    <li>Contact support by filling out the form below.</li>
+                    <li>Provide a clear description of your issue for faster assistance.</li>
+                </ul>
+            </div>
+        </div>
         <!-- Help Content -->
         <div id="help-content">
-            <div class="empty-state">
-                <i class="fa fa-question-circle"></i>
-                <h3>Help Center</h3>
-                <p>We're working on providing helpful resources and support for you!</p>
-            </div>
             <form id="contact-form" class="contact-form">
                 <h3>Contact Us</h3>
                 <div class="form-group">
-                    <label for="contact-name">Name</label>
-                    <input type="text" id="contact-name" name="name" required>
+                    <label for="contact-problem">Problem Overview</label>
+                    <input type="text" id="contact-problem" name="problem" required autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label for="contact-email">Email</label>
-                    <input type="email" id="contact-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="contact-message">Message</label>
-                    <textarea id="contact-message" name="message" rows="4" required></textarea>
+                    <label for="contact-message">Description</label>
+                    <textarea id="contact-message" name="message" rows="4" required autocomplete="off"></textarea>
                 </div>
                 <button type="submit" class="contact-btn">Send Message</button>
                 <div id="contact-status"></div>
