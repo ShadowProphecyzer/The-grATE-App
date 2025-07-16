@@ -309,6 +309,25 @@ app.post('/api/contact', (req, res) => {
     res.json({ message: 'Message received.' });
 });
 
+// --- User Scan History Endpoint ---
+const { MongoClient, ObjectId } = require('mongodb');
+
+app.get('/api/user/:username/history', async (req, res) => {
+    const username = req.params.username;
+    if (!username) return res.status(400).json({ error: 'Username required' });
+    try {
+        const userHistoryCollection = await dbManager.getUserCollection(username, 'history');
+        const history = await userHistoryCollection
+            .find({})
+            .sort({ createdAt: -1, timestamp: -1 })
+            .toArray();
+        res.json(history);
+    } catch (err) {
+        console.error('Error fetching user history:', err);
+        res.status(500).json({ error: 'Failed to fetch history' });
+    }
+});
+
 
 // Initialize database connection and start server
 async function startServer() {

@@ -1,3 +1,16 @@
+/* Updated color palette */
+:root {
+  --background: #121212;
+  --surface: #1E1E1E;
+  --primary: #FF6B00;
+  --primary-text: #FFFFFF;
+  --secondary-text: #B0B0B0;
+  --accent-success: #2ECC71;
+  --warning-error: #FF3B30;
+  --info-neutral: #8FA6B2;
+  --border-divider: #2A2A2A;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -10,11 +23,12 @@ html, body {
     overflow: hidden;
     margin: 0;
     padding: 0;
+    background: var(--background);
 }
 
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--info-neutral) 0%, var(--surface) 100%);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -58,6 +72,8 @@ body {
     justify-content: space-around;
     padding: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--surface);
+    border-top: 1px solid var(--border-divider);
 }
 
 .nav-item {
@@ -66,6 +82,7 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     transition: background 0.3s ease;
+    color: var(--primary-text);
 }
 
 .nav-item:hover {
@@ -74,6 +91,8 @@ body {
 
 .nav-item.active {
     background: rgba(255, 255, 255, 0.3);
+    background: var(--primary);
+    color: var(--primary-text);
 }
 
 .profile-card {
@@ -84,21 +103,26 @@ body {
     text-align: center;
     margin-bottom: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--surface);
+    border: 1px solid var(--border-divider);
 }
 
 .avatar {
     font-size: 4rem;
     color: white;
     margin-bottom: 1rem;
+    color: var(--primary-text);
 }
 
 .profile-card h2 {
     color: white;
     margin-bottom: 0.5rem;
+    color: var(--primary-text);
 }
 
 .profile-card p {
     color: rgba(255, 255, 255, 0.8);
+    color: var(--secondary-text);
 }
 
 .account-actions {
@@ -107,6 +131,7 @@ body {
     gap: 1rem;
     width: 100%;
     max-width: 300px;
+    background: none;
 }
 
 .action-btn {
@@ -121,10 +146,14 @@ body {
     align-items: center;
     gap: 1rem;
     font-size: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border-divider);
+    color: var(--primary-text);
 }
 
 .action-btn:hover {
     background: rgba(255, 255, 255, 0.3);
+    background: var(--background);
     transform: translateY(-2px);
 }
 
@@ -148,15 +177,17 @@ body#main-body {
 #main-container {
     width: 320px;
     max-height: 100vh;
-    background: #FFFBEA;
+    background: var(--surface);
     border-radius: 32px;
     border: 4px solid #e0e0e0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 0 0 8px #f5f5f5;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 0 0 8px var(--background);
     padding: 32px 16px 32px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
+    border: 4px solid var(--border-divider);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 0 0 8px var(--background);
 }
 
 #image-container {
@@ -178,6 +209,7 @@ body#main-body {
     font-weight: 700;
     margin: 16px 0 24px 0;
     text-align: center;
+    color: var(--primary);
 }
 
 #toggle-group {
@@ -198,6 +230,8 @@ body#main-body {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
+    background: var(--primary);
+    color: var(--primary-text);
 }
 
 .main-action-btn:hover {
@@ -206,6 +240,8 @@ body#main-body {
 
 .main-action-btn.active {
     background: #d94e0f;
+    background: var(--primary);
+    opacity: 0.9;
 }
 
 .account-form {
@@ -222,11 +258,13 @@ body#main-body {
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.2s;
+    border: 2px solid var(--border-divider);
 }
 
 .account-form input:focus {
     outline: none;
     border-color: #F26522;
+    border-color: var(--primary);
 }
 
 #form-message {
@@ -237,10 +275,12 @@ body#main-body {
 
 #form-message.success {
     color: #4CAF50;
+    color: var(--accent-success);
 }
 
 #form-message.error {
     color: #f44336;
+    color: var(--warning-error);
 }
 
 #return-main-link {
@@ -248,8 +288,11 @@ body#main-body {
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s;
+    color: var(--primary);
 }
 
 #return-main-link:hover {
     color: #d94e0f;
+    color: var(--primary);
+    opacity: 0.8;
 }

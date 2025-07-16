@@ -508,6 +508,107 @@ function openPhotoGallery() {
     fileInput.click();
 }
 
+// --- Custom Buttons Logic ---
+
+// --- Feedback Message Area ---
+function showFeedback(message, isError = true) {
+    let feedback = document.getElementById('user-feedback');
+    if (!feedback) {
+        feedback = document.createElement('div');
+        feedback.id = 'user-feedback';
+        feedback.style.position = 'fixed';
+        feedback.style.bottom = '110px';
+        feedback.style.left = '50%';
+        feedback.style.transform = 'translateX(-50%)';
+        feedback.style.background = isError ? '#ffdddd' : '#ddffdd';
+        feedback.style.color = isError ? '#b30000' : '#006600';
+        feedback.style.padding = '8px 18px';
+        feedback.style.borderRadius = '8px';
+        feedback.style.fontSize = '0.98rem';
+        feedback.style.boxShadow = '0 2px 8px rgba(0,0,0,0.10)';
+        feedback.style.zIndex = 120;
+        document.body.appendChild(feedback);
+    }
+    feedback.textContent = message;
+    feedback.style.display = 'block';
+    setTimeout(() => { feedback.style.display = 'none'; }, 2500);
+}
+
+// Upload from storage
+const uploadButton = document.getElementById('upload-button');
+if (uploadButton) {
+    uploadButton.addEventListener('click', function() {
+        let fileInput = document.getElementById('hidden-upload-input');
+        if (!fileInput) {
+            fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.id = 'hidden-upload-input';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+        }
+        fileInput.value = '';
+        fileInput.click();
+        fileInput.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                showFeedback('No file selected. Please choose an image.', true);
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                showFeedback('Invalid file type. Please select an image.', true);
+                return;
+            }
+            // TODO: handle the uploaded image file
+            showFeedback('Image selected: ' + file.name, false);
+        };
+    });
+}
+
+// Manual code input
+const manualCodeButton = document.getElementById('manual-code-button');
+const manualCodeInputContainer = document.getElementById('manual-code-input-container');
+const manualCodeInput = document.getElementById('manual-code-input');
+const submitCodeBtn = document.getElementById('submit-code-btn');
+
+if (manualCodeButton && manualCodeInputContainer) {
+    manualCodeButton.addEventListener('click', function() {
+        if (manualCodeInputContainer.style.display === 'none') {
+            manualCodeInputContainer.style.display = 'flex';
+            manualCodeInput.focus();
+        } else {
+            manualCodeInputContainer.style.display = 'none';
+        }
+    });
+}
+
+// Only allow numbers in the input
+if (manualCodeInput) {
+    manualCodeInput.addEventListener('input', function(e) {
+        const oldValue = this.value;
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (oldValue !== this.value) {
+            showFeedback('Only numbers are allowed in the code field.', true);
+        }
+    });
+}
+
+// Handle submit for manual code
+if (submitCodeBtn && manualCodeInput) {
+    submitCodeBtn.addEventListener('click', function() {
+        const code = manualCodeInput.value.trim();
+        if (code.length === 0) {
+            showFeedback('Code cannot be empty. Please enter a number.', true);
+            manualCodeInput.focus();
+            return;
+        }
+        // TODO: handle the submitted code (e.g., processQRCode(code) or similar)
+        showFeedback('Submitted code: ' + code, false);
+        manualCodeInput.value = '';
+        manualCodeInputContainer.style.display = 'none';
+    });
+}
+
 // Initialize scanner when page loads
 document.addEventListener('DOMContentLoaded', function() {
     initializeScanner();

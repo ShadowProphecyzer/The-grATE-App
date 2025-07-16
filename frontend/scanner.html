@@ -45,10 +45,22 @@
         </div>
         <div class="scanner-text">Position QR code within frame</div>
     </div>
-    <!-- Photo Button -->
-    <button id="photo-button">
-        <i class="fa fa-camera"></i>
-    </button>
+    <!-- Photo and Side Buttons -->
+    <div id="photo-buttons-container">
+        <button id="upload-button" title="Upload from storage">
+            <i class="fa fa-upload"></i>
+        </button>
+        <button id="photo-button">
+            <i class="fa fa-camera"></i>
+        </button>
+        <button id="manual-code-button" title="Enter code manually">
+            <i class="fa fa-keyboard"></i>
+        </button>
+    </div>
+    <div id="manual-code-input-container" style="display:none;">
+        <input type="text" id="manual-code-input" placeholder="Enter code" inputmode="numeric" pattern="[0-9]*" maxlength="20" />
+        <button id="submit-code-btn">Submit</button>
+    </div>
     <!-- Bottom Navigation -->
     <div id="bottom-nav">
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
