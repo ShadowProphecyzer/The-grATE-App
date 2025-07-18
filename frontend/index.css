@@ -72,13 +72,16 @@ body#main-body {
 }
 
 #button-group {
-    width: 100%;
+    width: 320px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    align-items: center;
 }
 
 .main-action-btn {
+    width: 100%;
+    box-sizing: border-box;
     background: #F26522;
     color: #fff;
     border: none;

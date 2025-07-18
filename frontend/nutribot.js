@@ -83,11 +83,10 @@ function setupNavigation() {
 function setGreeting() {
     const username = localStorage.getItem('username');
     console.log('[Nutribot] Setting greeting for user:', username);
-    if (username) {
-        const greetingDiv = document.getElementById('greeting');
-        if (greetingDiv) {
-            greetingDiv.innerHTML = '<i class="fa fa-lock" style="color:#F26522;"></i> <span>Hello</span> <span id="user-name">' + username + '</span>';
-        }
+    const greetingDiv = document.getElementById('greeting');
+    if (greetingDiv) {
+        const displayName = username ? username : 'Guest';
+        greetingDiv.innerHTML = '<i class="fa fa-lock" style="color:#F26522;"></i> <span>Hello</span> <span id="user-name">' + displayName + '</span>';
     }
 }
 
