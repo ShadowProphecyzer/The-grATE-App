@@ -99,7 +99,7 @@ function setGreeting() {
 function logout() {
     console.log('[Market] Logging out user');
     localStorage.removeItem('username');
-    window.location.href = 'mainscreen.html';
+    window.location.href = 'index.html';
 }
 
 // Settings panel logic (header icon, fallback)

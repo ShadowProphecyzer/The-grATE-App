@@ -96,7 +96,7 @@ function setGreeting() {
 // Logout functionality
 function logout() {
     localStorage.removeItem('username');
-    window.location.href = 'mainscreen.html';
+    window.location.href = 'account.html';
 }
 
 // Load scan history for the user

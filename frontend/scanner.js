@@ -71,7 +71,7 @@ navItems.forEach(item => {
                 flipCamera();
                 break;
             case 'Logout':
-                window.location.href = 'mainscreen.html';
+                window.location.href = 'index.html';
                 break;
         }
     });

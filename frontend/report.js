@@ -61,7 +61,7 @@ function setGreeting() {
 function logout() {
     console.log('[Report] Logging out user');
     localStorage.removeItem('username');
-    window.location.href = 'mainscreen.html';
+    window.location.href = 'index.html';
 }
 
 // Report form submission logic

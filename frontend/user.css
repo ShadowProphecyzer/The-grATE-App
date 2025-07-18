@@ -1,0 +1,84 @@
+html, body {
+    height: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+body#dashboard-body {
+    min-height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+}
+
+#dashboard-container {
+    min-height: 100vh;
+    max-height: none;
+    overflow-y: visible;
+}
+
+.user-details-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0 0 0;
+    gap: 18px;
+}
+.user-profile-pic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+.user-info-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 320px;
+    background: #fffbe9;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    padding: 12px 8px;
+}
+.user-info-fields div {
+    margin-bottom: 4px;
+    font-size: 0.97rem;
+    color: #1a2340;
+}
+.user-info-fields input[type="text"],
+.user-info-fields input[type="number"] {
+    width: 100%;
+    padding: 4px 7px;
+    border: 1.5px solid #F26522;
+    border-radius: 7px;
+    font-size: 0.97rem;
+    font-family: inherit;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    outline: none;
+    transition: border 0.2s;
+    box-sizing: border-box;
+    max-width: 100%;
+}
+.user-info-fields input[type="text"]:focus,
+.user-info-fields input[type="number"]:focus {
+    border: 1.5px solid #d94e0f;
+}
+#save-preferences-btn {
+    background: #F26522;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+#save-preferences-btn:hover {
+    background: #d94e0f;
+} 

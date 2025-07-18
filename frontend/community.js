@@ -41,7 +41,7 @@ function displayPhotos(photos) {
     const container = document.getElementById('photos-container');
     
     if (!photos || photos.length === 0) {
-        showEmptyState('No photos yet. Start scanning to capture your first photo!');
+        showEmptyState('No posts yet. Start scanning to engage with the community!');
         return;
     }
 
@@ -102,7 +102,7 @@ function showEmptyState(message) {
     container.innerHTML = `
         <div class="empty-state">
             <i class="fa fa-camera"></i>
-            <h3>No Photos Yet</h3>
+            <h3>Community Coming Soon</h3>
             <p>${message}</p>
             <a href="scanner.html" class="scan-btn">
                 <i class="fa fa-camera"></i> Start Scanning
@@ -143,7 +143,7 @@ function setupNavigation() {
                     break;
                 case 'Logout':
                     localStorage.removeItem('username');
-                    window.location.href = 'mainscreen.html';
+                    window.location.href = 'index.html';
                     break;
             }
         });

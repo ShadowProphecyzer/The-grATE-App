@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The grATE App - User Profile</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="user.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog" id="settings-cog"></i>
+            </div>
+        </div>
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel" style="display:none;">
+            <div class="settings-panel-content">
+                <button id="close-settings-panel" class="close-settings-btn">&times;</button>
+                <h2>User Page Instructions</h2>
+                <ul>
+                    <li>View and edit your personal information.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>Personal Details</div>
+                <div class="promo-desc">Manage your profile information</div>
+            </div>
+            <div id="promo-img">
+                <i class="fa fa-user" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+        <!-- User Info Content -->
+        <div id="user-content">
+            <div class="user-details-section">
+                <div class="user-profile-pic">
+                    <i class="fa fa-user-circle" style="font-size:4rem;color:#F26522;"></i>
+                </div>
+                <div class="user-info-fields">
+                    <div><strong>Email:</strong> <span id="profile-email">john@example.com</span></div>
+                    <div><strong>Username:</strong> <span id="profile-username"></span></div>
+                    <div><strong>Age:</strong> <input type="number" id="profile-age" min="0" placeholder="Enter age"></div>
+                    <div><strong>Height (cm):</strong> <input type="number" id="profile-height" min="0" placeholder="Enter height"></div>
+                    <div><strong>Weight (kg):</strong> <input type="number" id="profile-weight" min="0" placeholder="Enter weight"></div>
+                    <div><strong>Allergies:</strong> <input type="text" id="profile-allergies" placeholder="e.g. peanuts, gluten"></div>
+                    <div><strong>Dietary Restrictions:</strong> <input type="text" id="profile-dietary" placeholder="e.g. vegan, halal"></div>
+                    <div><strong>Likes:</strong> <input type="text" id="profile-likes" placeholder="e.g. apples, oats"></div>
+                    <div><strong>Dislikes:</strong> <input type="text" id="profile-dislikes" placeholder="e.g. broccoli, milk"></div>
+                    <div><strong>Goals:</strong> <input type="text" id="profile-goals" placeholder="e.g. lose weight, gain muscle"></div>
+                    <button id="save-preferences-btn">Save Preferences</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+        <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
+        <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item active"><i class="fa fa-user"></i><span>Profile</span></div>
+        <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
+    </div>
+    <script src="user.js"></script>
+</body>
+</html>

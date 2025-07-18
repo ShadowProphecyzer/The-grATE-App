@@ -421,6 +421,46 @@ app.post('/api/report', multer({ storage: multer.memoryStorage() }).array('photo
     }
 });
 
+// Save or update user preferences
+app.post('/api/user/preferences', async (req, res) => {
+    try {
+        const { username, email, age, height, weight, allergies, dietary, likes, dislikes, goals } = req.body;
+        if (!username || !email) {
+            return res.status(400).json({ message: 'Username and email are required.' });
+        }
+        const userPrefsCollection = dbManager.getCollection('user_preferences');
+        // Upsert preferences by email+username
+        const result = await userPrefsCollection.updateOne(
+            { username, email },
+            { $set: { age, height, weight, allergies, dietary, likes, dislikes, goals, updatedAt: new Date() } },
+            { upsert: true }
+        );
+        res.json({ message: 'Preferences saved.' });
+    } catch (error) {
+        console.error('Save preferences error:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
+// Get user preferences by email or username
+app.get('/api/user/preferences', async (req, res) => {
+    try {
+        const { email, username } = req.query;
+        if (!email && !username) {
+            return res.status(400).json({ message: 'Email or username required.' });
+        }
+        const userPrefsCollection = dbManager.getCollection('user_preferences');
+        const prefs = await userPrefsCollection.findOne(email ? { email } : { username });
+        if (!prefs) {
+            return res.status(404).json({ message: 'Preferences not found.' });
+        }
+        res.json(prefs);
+    } catch (error) {
+        console.error('Get preferences error:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
 // --- User Scan History Endpoint ---
 const { MongoClient, ObjectId } = require('mongodb');
 

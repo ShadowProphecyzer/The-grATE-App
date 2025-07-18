@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="community.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body id="dashboard-body">
     <div id="dashboard-container">
@@ -48,6 +50,27 @@
             <div class="menu-item active" id="menu-favourites">Favourites</div>
             <div class="menu-item" id="menu-tools">All Tools</div>
             <div class="menu-underline"></div>
+        </div>
+        <!-- Profile Section (hidden by default) -->
+        <div id="profile-section" style="display:none;">
+            <div class="radar-center-wrapper">
+                <canvas id="nutrition-radar" width="300" height="300"></canvas>
+            </div>
+            <div id="nutrition-note" class="nutrition-note">Note: 100 represents full and appropriate consumption.</div>
+            <div class="nutrient-cards-row">
+                <div class="nutrient-card nutrient-card-user" onclick="window.location.href='user.html'" style="cursor:pointer;">
+                    <i class="fa fa-user"></i>
+                    <span>Personal Info</span>
+                </div>
+                <div class="nutrient-card nutrient-card-diet" onclick="window.location.href='calender.html'" style="cursor:pointer;">
+                    <i class="fa fa-utensils"></i>
+                    <span>Diet Planner</span>
+                </div>
+                <div class="nutrient-card nutrient-card-subscription" onclick="window.location.href='subscriptions.html'" style="cursor:pointer;">
+                    <i class="fa fa-credit-card"></i>
+                    <span>Subscriptions</span>
+                </div>
+            </div>
         </div>
         <!-- Quick Banking Actions -->
         <div id="quick-actions">

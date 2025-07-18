@@ -170,7 +170,7 @@ function setGreeting() {
 function logout() {
     localStorage.removeItem('username');
     localStorage.removeItem('selectedProduct');
-    window.location.href = 'mainscreen.html';
+    window.location.href = 'index.html';
 }
 
 // Add navigation functions

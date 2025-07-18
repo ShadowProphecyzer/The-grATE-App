@@ -84,7 +84,7 @@ function setupNavigation() {
 // Logout functionality
 function logout() {
     localStorage.removeItem('username');
-    window.location.href = 'mainscreen.html';
+    window.location.href = 'account.html';
 }
 
 // Add functionality for quick action buttons
@@ -117,12 +117,20 @@ const quickActionsSection = document.getElementById('quick-actions');
 const recipesCardSection = document.getElementById('recipes-card');
 function showSection(section) {
     // Promo card always visible
+    const profileSection = document.getElementById('profile-section');
     if (section === 'favourites') {
         quickActionsSection && (quickActionsSection.style.display = '');
         recipesCardSection && (recipesCardSection.style.display = '');
+        profileSection && (profileSection.style.display = 'none');
+    } else if (section === 'profile') {
+        quickActionsSection && (quickActionsSection.style.display = 'none');
+        recipesCardSection && (recipesCardSection.style.display = 'none');
+        profileSection && (profileSection.style.display = '');
+        renderNutritionRadar();
     } else {
         quickActionsSection && (quickActionsSection.style.display = 'none');
         recipesCardSection && (recipesCardSection.style.display = 'none');
+        profileSection && (profileSection.style.display = 'none');
     }
 }
 
@@ -137,13 +145,88 @@ menuItems.forEach((item, idx) => {
         // Show/hide content
         if (idx === 1) {
             showSection('favourites');
+        } else if (idx === 0) {
+            showSection('profile');
         } else {
             showSection('placeholder');
         }
     });
 });
 // Show only Favourites by default
-showSection('favourites'); 
+showSection('favourites');
+
+// Global variable for nutrition values, can be set by other files
+window.nutritionValues = window.nutritionValues || [65, 59, 90, 81, 56, 55, 40]; // Carbs, Vitamins, Minerals, Fibres, Water, Fats, Proteins
+
+function renderNutritionRadar() {
+    if (!window.Chart) return;
+    const ctx = document.getElementById('nutrition-radar').getContext('2d');
+    // Destroy previous chart if exists
+    if (window.nutritionRadarChart) {
+        window.nutritionRadarChart.destroy();
+    }
+    window.nutritionRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Carbohydrates', 'Vitamins', 'Minerals', 'Fibres', 'Water', 'Fats', 'Proteins'],
+            datasets: [{
+                label: 'Your Intake',
+                data: window.nutritionValues,
+                fill: true,
+                backgroundColor: 'rgba(242,101,34,0.2)',
+                borderColor: 'rgba(242,101,34,1)',
+                pointBackgroundColor: 'rgba(242,101,34,1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(242,101,34,1)'
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                r: {
+                    angleLines: { display: true },
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                    pointLabels: {
+                        color: function(context) {
+                            // Color based on value consumed
+                            const value = window.nutritionValues?.[context.index] ?? 0;
+                            if (value < 40) return '#e53935'; // red
+                            if (value < 70) return '#FFC107'; // orange
+                            return '#43A047'; // green
+                        },
+                        font: { size: 16 }
+                    },
+                    ticks: {
+                        color: '#333',
+                        stepSize: 20,
+                        backdropColor: 'rgba(0,0,0,0)',
+                        callback: function(value) {
+                            return value % 20 === 0 ? value : '';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Add note below the radar plot
+const profileSection = document.getElementById('profile-section');
+if (profileSection && !document.getElementById('nutrition-note')) {
+    const note = document.createElement('div');
+    note.id = 'nutrition-note';
+    note.style.fontSize = '0.85em';
+    note.style.color = '#666';
+    note.style.marginTop = '10px';
+    note.textContent = 'Note: 100 represents full and appropriate consumption.';
+    profileSection.appendChild(note);
+}
 
 // Settings panel logic
 const settingsCog = document.getElementById('settings-cog');

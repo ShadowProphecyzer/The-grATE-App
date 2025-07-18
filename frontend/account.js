@@ -185,7 +185,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
 });
 
 document.getElementById('return-main-link').addEventListener('click', function() {
-    window.location.href = 'mainscreen.html';
+    window.location.href = 'index.html';
 });
 
 // Settings panel logic (header icon, fallback)
