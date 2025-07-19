@@ -126,6 +126,7 @@ document.getElementById('signin-form').addEventListener('submit', async function
                 localStorage.setItem('username', data.username);
                 localStorage.setItem('email', email);
                 localStorage.setItem('chatHash', data.chatHash); // Add this line
+                // No need to store JWT
                 console.log('Set username and email in localStorage:', data.username, email);
             }
             setTimeout(() => { window.location.href = '/dashboard.html'; }, 1200);
@@ -203,4 +204,11 @@ if (settingsCog && settingsPanel && closeSettingsBtn) {
     settingsPanel.addEventListener('click', function(e) {
         if (e.target === settingsPanel) settingsPanel.style.display = 'none';
     });
+}
+
+function logout() {
+    localStorage.removeItem('username');
+    localStorage.removeItem('selectedProduct');
+    // No need to remove JWT
+    window.location.href = 'index.html';
 }

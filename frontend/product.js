@@ -16,7 +16,7 @@ async function loadUserProducts() {
             showEmptyState('Please log in to view your products');
             return;
         }
-
+        // Session cookie will be sent automatically; no need for Authorization header
         const response = await fetch(`/api/user/${encodeURIComponent(username)}/products`);
         const data = await response.json();
 

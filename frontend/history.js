@@ -107,6 +107,7 @@ async function loadHistory() {
         return;
     }
     try {
+        // Session cookie will be sent automatically; no need for Authorization header
         const res = await fetch(`/api/user/${encodeURIComponent(username)}/history`);
         if (!res.ok) throw new Error('Failed to fetch history');
         const data = await res.json();

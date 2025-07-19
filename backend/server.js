@@ -9,6 +9,29 @@ const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // Add this line
+const jwt = require('jsonwebtoken');
+const session = require('express-session');
+
+function authenticateJWT(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return res.status(401).json({ message: 'Missing Authorization header' });
+    const token = authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Missing token' });
+    const jwtSecret = config.JWT_SECRET || 'your_jwt_secret';
+    jwt.verify(token, jwtSecret, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid or expired token' });
+        req.user = user;
+        next();
+    });
+}
+
+function authenticateSession(req, res, next) {
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Not authenticated (session)' });
+    }
+}
 
 const app = express();
 const PORT = config.PORT;
@@ -59,6 +82,16 @@ async function connectToDatabase() {
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(session({
+    secret: config.SESSION_SECRET || 'your_session_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // Set to true if using HTTPS
+        maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    }
+}));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/mainscreen.html'));
@@ -157,6 +190,19 @@ app.post('/api/auth/signin', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password.' });
         }
 
+        // Set session
+        req.session.user = {
+            username: user.username,
+            email: user.email
+        };
+
+        // Generate JWT
+        const jwtSecret = config.JWT_SECRET || 'your_jwt_secret';
+        const token = jwt.sign(
+            { username: user.username, email: user.email },
+            jwtSecret,
+            { expiresIn: '2h' }
+        );
         // Generate HMAC hash for chat bubble authentication
         const secret = config.CHAT_SECRET;
         const userId = user.username;
@@ -165,7 +211,8 @@ app.post('/api/auth/signin', async (req, res) => {
         res.json({ 
             message: 'Sign-in successful.', 
             username: user.username,
-            chatHash: hash // Add hash to response
+            chatHash: hash, // Add hash to response
+            token // Return JWT
         });
     } catch (error) {
         console.error('Signin error:', error);
@@ -195,7 +242,7 @@ app.get('/api/user/:email', async (req, res) => {
 });
 
 // Example endpoint to add data to a user's collection
-app.post('/api/user/:username/data', async (req, res) => {
+app.post('/api/user/:username/data', authenticateSession, async (req, res) => {
     try {
         const { username } = req.params;
         const data = req.body;
@@ -225,7 +272,7 @@ app.post('/api/user/:username/data', async (req, res) => {
 });
 
 // Example endpoint to get data from a user's collection
-app.get('/api/user/:username/data', async (req, res) => {
+app.get('/api/user/:username/data', authenticateSession, async (req, res) => {
     try {
         const { username } = req.params;
         
@@ -251,7 +298,7 @@ app.get('/api/user/:username/data', async (req, res) => {
 });
 
 // Add photo to user's personal database
-app.post('/api/user/:username/upload', multer({ storage: multer.memoryStorage() }).single('photo'), async (req, res) => {
+app.post('/api/user/:username/upload', authenticateSession, multer({ storage: multer.memoryStorage() }).single('photo'), async (req, res) => {
     try {
         const { username } = req.params;
         const file = req.file;
@@ -283,7 +330,7 @@ app.post('/api/user/:username/upload', multer({ storage: multer.memoryStorage() 
 
 
 // Get user's photos
-app.get('/api/user/:username/photos', async (req, res) => {
+app.get('/api/user/:username/photos', authenticateSession, async (req, res) => {
     try {
         const { username } = req.params;
         
@@ -464,7 +511,7 @@ app.get('/api/user/preferences', async (req, res) => {
 // --- User Scan History Endpoint ---
 const { MongoClient, ObjectId } = require('mongodb');
 
-app.get('/api/user/:username/history', async (req, res) => {
+app.get('/api/user/:username/history', authenticateSession, async (req, res) => {
     const username = req.params.username;
     if (!username) return res.status(400).json({ error: 'Username required' });
     try {
@@ -477,6 +524,19 @@ app.get('/api/user/:username/history', async (req, res) => {
     } catch (err) {
         console.error('Error fetching user history:', err);
         res.status(500).json({ error: 'Failed to fetch history' });
+    }
+});
+
+// Get user's products (example endpoint, not protected by JWT yet)
+app.get('/api/user/:username/products', authenticateSession, async (req, res) => {
+    try {
+        const { username } = req.params;
+        const userCollection = await dbManager.getUserCollection(username, 'products');
+        const products = await userCollection.find({}).toArray();
+        res.json({ username, products });
+    } catch (error) {
+        console.error('Get user products error:', error);
+        res.status(500).json({ message: 'Internal server error.' });
     }
 });
 
