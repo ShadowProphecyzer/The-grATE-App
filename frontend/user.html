@@ -6,8 +6,138 @@
     <title>The grATE App - User Profile</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="community.css">
-    <link rel="stylesheet" href="user.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        #dashboard-container {
+            box-sizing: border-box;
+            padding-top: 72px;
+            width: 100%;
+            max-width: 400px;
+            background: #f3c892;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.16);
+            margin-top: 0;
+            position: relative;
+        }
+        #dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            z-index: 1001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 20px 8px 20px;
+            background: #F26522;
+            border-radius: 24px 24px 0 0;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        #dashboard-header i {
+            color: #fff !important;
+        }
+        #greeting {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+        #greeting #user-name {
+            font-weight: 700;
+            margin-left: 4px;
+        }
+        #header-icons {
+            display: flex;
+            gap: 16px;
+            font-size: 1.2rem;
+        }
+        #promo-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-radius: 18px;
+            margin: 18px 16px 10px 16px;
+            padding: 18px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+        }
+        #promo-text {
+            flex: 1;
+        }
+        #promo-text div:first-child {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1a2340;
+        }
+        .promo-desc {
+            font-size: 0.95rem;
+            color: #888;
+            margin: 4px 0 10px 0;
+        }
+        #promo-img {
+            margin-left: 16px;
+            display: flex;
+            align-items: center;
+        }
+        #user-content {
+            margin: 0 16px;
+        }
+        .user-details-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(242,101,34,0.07);
+            padding: 24px 0 10px 0;
+            margin-top: 18px;
+        }
+        .user-profile-pic {
+            margin-bottom: 12px;
+        }
+        .user-info-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 320px;
+        }
+        .user-info-fields input {
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            background: #f9f6f2;
+            color: #1a2340;
+            transition: border-color 0.2s;
+        }
+        .user-info-fields input:focus {
+            outline: none;
+            border-color: #F26522;
+        }
+        #save-preferences-btn {
+            background: #F26522;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        #save-preferences-btn:hover {
+            background: #d94e0f;
+        }
+    </style>
 </head>
 <body id="dashboard-body">
     <div id="dashboard-container">

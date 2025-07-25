@@ -3,64 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Evaluation</title>
+    <title>Health Evaluation - grATE App</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body#community-body { background: #f3c892; }
-        #main-card { background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.16); max-width: 400px; margin: 32px auto 0 auto; padding: 24px 18px; }
-        #top-bar { background: #F26522; color: #fff; border-radius: 0 0 18px 18px; display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 10px 20px; position: relative; }
-        #greeting { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
-        #header-icons { font-size: 1.2rem; }
-        #settings-panel { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; justify-content:center; align-items:center; }
-        .settings-panel-content { background:#fff; border-radius:16px; padding:32px 24px; max-width:320px; }
-        .close-settings-btn { background:none; border:none; font-size:2rem; color:#F26522; position:absolute; top:12px; right:18px; cursor:pointer; }
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        #dashboard-container {
+            box-sizing: border-box;
+        }
+        #health-eval-result {
+            word-break: break-word;
+            background: #fffbe9;
+            border: 1.5px solid #f2c892;
+            border-radius: 14px;
+            padding: 18px 18px 14px 18px;
+            margin-top: 18px;
+            font-size: 1.08rem;
+            color: #1a2340;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #F26522 #f2c892;
+        }
+        
+        #health-eval-result::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #health-eval-result::-webkit-scrollbar-track {
+            background: #f2c892;
+            border-radius: 4px;
+        }
+        
+        #health-eval-result::-webkit-scrollbar-thumb {
+            background: #F26522;
+            border-radius: 4px;
+        }
+        
+        #health-eval-result::-webkit-scrollbar-thumb:hover {
+            background: #d94e0f;
+        }
     </style>
 </head>
-<body id="community-body">
-    <div id="top-bar">
-        <div id="greeting"><i class="fa fa-lock"></i> <span>Hello</span> <span id="user-name"></span></div>
-        <div id="header-icons"><i class="fa fa-cog" id="settings-cog"></i></div>
-    </div>
-    <div id="settings-panel" class="settings-panel">
-        <div class="settings-panel-content">
-            <button id="close-settings-panel" class="close-settings-btn">&times;</button>
-            <h2>Settings</h2>
-            <ul><li>Settings panel coming soon.</li></ul>
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
+            </div>
+        </div>
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel" style="display:none;">
+            <div class="settings-panel-content">
+                <button id="close-settings-panel" class="close-settings-btn">&times;</button>
+                <h2>Health Evaluation Instructions</h2>
+                <ul>
+                    <li>Enter food names or ingredients to evaluate their health impact.</li>
+                    <li>Your personal details from the Profile page will be used for personalized analysis.</li>
+                    <li>The AI will assess nutritional value, health risks, and dietary compatibility.</li>
+                    <li>Results are private and not stored.</li>
+                    <li>This tool is not a substitute for medical advice.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>Health Evaluation</div>
+                <div class="promo-desc">Evaluate foods for health impact and dietary compatibility</div>
+            </div>
+            <div id="promo-img">
+                <i class="fa fa-heartbeat" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+        <!-- Health Eval Content -->
+        <div id="health-eval-container">
+            <form id="health-eval-form" style="display:flex;flex-direction:column;gap:12px;align-items:center;max-width:340px;margin:0 auto;">
+                <textarea id="health-eval-input" placeholder="Enter food names or ingredients (e.g., pizza, chicken breast, spinach)" rows="2" style="width:90%;min-width:180px;max-width:320px;min-height:36px;max-height:80px;border-radius:12px;padding:8px 10px;font-size:1rem;"></textarea>
+                <button type="submit" style="width:100%;background:#F26522;color:#fff;border:none;padding:12px 0;border-radius:8px;font-size:1rem;">Evaluate Health Impact</button>
+            </form>
+            <div id="health-eval-result" style="margin-top:16px;text-align:center;"></div>
         </div>
     </div>
-    <div id="main-card">
-        <h1 style="color:#F26522;font-size:1.3rem;margin-bottom:18px;">Health Evaluation</h1>
-        <form id="health-eval-form">
-            <textarea id="health-eval-input" placeholder="Enter product/food name or ingredients" rows="4" style="width:100%;margin-bottom:10px;"></textarea>
-            <button type="submit" style="width:100%;background:#F26522;color:#fff;border:none;padding:10px 0;border-radius:8px;font-size:1rem;">Evaluate</button>
-        </form>
-        <div id="health-eval-result" style="margin-top:16px;"></div>
-    </div>
+    <!-- Bottom Navigation -->
     <div id="bottom-nav">
-        <div class="nav-item active"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
         <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
         <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
         <div class="nav-item"><i class="fa fa-question-circle"></i><span>Help</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
+    <script src="health-eval.js"></script>
     <script>
-    // Fill username
+    // Settings panel logic for cog icon
     document.addEventListener('DOMContentLoaded', function() {
-        const username = localStorage.getItem('username');
-        if (username) document.getElementById('user-name').textContent = username;
-        // Settings panel logic
-        const settingsCog = document.getElementById('settings-cog');
-        const settingsPanel = document.getElementById('settings-panel');
-        const closeSettingsBtn = document.getElementById('close-settings-panel');
-        if (settingsCog && settingsPanel && closeSettingsBtn) {
-            settingsCog.addEventListener('click', function() { settingsPanel.style.display = 'flex'; });
-            closeSettingsBtn.addEventListener('click', function() { settingsPanel.style.display = 'none'; });
-            settingsPanel.addEventListener('click', function(e) { if (e.target === settingsPanel) settingsPanel.style.display = 'none'; });
+        const settingsPanel = document.querySelector('.settings-panel');
+        const closeSettingsBtn = document.querySelector('.close-settings-btn');
+        const cogIcon = document.querySelector('#header-icons .fa-cog');
+        if (cogIcon && settingsPanel && closeSettingsBtn) {
+            cogIcon.addEventListener('click', function() {
+                settingsPanel.style.display = 'flex';
+            });
+            closeSettingsBtn.addEventListener('click', function() {
+                settingsPanel.style.display = 'none';
+            });
+            settingsPanel.addEventListener('click', function(e) {
+                if (e.target === settingsPanel) settingsPanel.style.display = 'none';
+            });
         }
     });
     </script>
-    <script src="health-eval.js"></script>
 </body>
 </html> 

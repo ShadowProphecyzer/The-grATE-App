@@ -7,6 +7,51 @@
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            /* Remove height and overflow-y to allow default scrolling */
+        }
+        #dashboard-container {
+            box-sizing: border-box;
+            /* No overflow or min-height here */
+        }
+        #ingredient-result {
+            word-break: break-word;
+            background: #fffbe9;
+            border: 1.5px solid #f2c892;
+            border-radius: 14px;
+            padding: 18px 18px 14px 18px;
+            margin-top: 18px;
+            font-size: 1.08rem;
+            color: #1a2340;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #F26522 #f2c892;
+        }
+        
+        #ingredient-result::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #ingredient-result::-webkit-scrollbar-track {
+            background: #f2c892;
+            border-radius: 4px;
+        }
+        
+        #ingredient-result::-webkit-scrollbar-thumb {
+            background: #F26522;
+            border-radius: 4px;
+        }
+        
+        #ingredient-result::-webkit-scrollbar-thumb:hover {
+            background: #d94e0f;
+        }
+    </style>
 </head>
 <body id="dashboard-body">
     <div id="dashboard-container">
@@ -35,25 +80,7 @@
         <div id="ingredient-checker-container">
             <form id="ingredient-form" style="display:flex;flex-direction:column;gap:12px;align-items:center;max-width:340px;margin:0 auto;">
                 <textarea id="ingredient-input" placeholder="Enter ingredients (comma separated)" rows="2" style="width:90%;min-width:180px;max-width:320px;min-height:36px;max-height:80px;border-radius:12px;padding:8px 10px;font-size:1rem;"></textarea>
-                <!-- Dietary Preferences/Allergens (moved here) -->
-                <div id="ingredient-options" style="width:90%;min-width:180px;max-width:320px;padding:12px 10px;background:#fffbe9;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#1a2340;font-size:1rem;display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:0;">
-                  <strong style="margin-bottom:4px;">What should we check for?</strong>
-                  <div style="display:flex;flex-wrap:wrap;gap:10px 16px;width:100%;">
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-vegan" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;" checked> Vegan</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-vegetarian" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Vegetarian</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-gluten" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;" checked> Gluten</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-dairy" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Dairy</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-eggs" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Eggs</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-nuts" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Nuts</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-soy" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Soy</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-fish" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Fish</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-halal" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Halal</label>
-                    <label style="font-size:1rem;"><input type="checkbox" name="check-kosher" style="transform:scale(1.3);margin-right:7px;vertical-align:middle;"> Kosher</label>
-                  </div>
-                  <div style="margin-top:8px;font-size:0.97rem;width:100%;">
-                    <em>Select what you want to avoid or check for. The checker will flag any matching ingredients.</em>
-                  </div>
-                </div>
+                <!-- Checklist removed -->
                 <button type="submit" style="width:100%;background:#F26522;color:#fff;border:none;padding:12px 0;border-radius:8px;font-size:1rem;">Check Ingredients</button>
             </form>
             <div id="ingredient-result" style="margin-top:16px;text-align:center;"></div>
@@ -64,8 +91,11 @@
             <button class="close-settings-btn">&times;</button>
             <h2>Ingredient Checker Instructions</h2>
             <ul>
-                <li>Enter a list of ingredients separated by commas.</li>
-                <li>Check for allergens, dietary restrictions, and more.</li>
+                <li>Enter ingredients separated by commas.</li>
+                <li>Your personal details from the Profile page will be used for personalized analysis.</li>
+                <li>The AI will check for allergens, dietary restrictions, and health goals.</li>
+                <li>Results are private and not stored.</li>
+                <li>This tool is not a substitute for medical advice.</li>
             </ul>
         </div>
     </div>

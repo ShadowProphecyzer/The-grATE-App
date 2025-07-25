@@ -12,6 +12,10 @@ const crypto = require('crypto'); // Add this line
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require('openai').OpenAI;
+const { ObjectId } = require('mongodb');
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 function authenticateJWT(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -74,9 +78,72 @@ async function connectToDatabase() {
     try {
         await dbManager.connect();
         console.log('Connected to MongoDB Atlas');
+        
+        // Create some sample community posts if none exist
+        await createSamplePosts();
     } catch (error) {
         console.error('Failed to connect to MongoDB:', error);
         process.exit(1);
+    }
+}
+
+// Create sample community posts
+async function createSamplePosts() {
+    try {
+        const postsCollection = dbManager.getCommunityCollection();
+        const existingPosts = await postsCollection.countDocuments();
+        
+        if (existingPosts === 0) {
+            console.log('Creating sample community posts...');
+            
+            const samplePosts = [
+                {
+                    content: "Just discovered this amazing Thai restaurant! The ingredients were so fresh and the FDA code was clearly visible. Love how easy it is to scan and get instant information about what I'm eating! 🍜",
+                    author: "FoodExplorer",
+                    likes: ["HealthNut", "ThaiFoodie"],
+                    comments: [],
+                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+                    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
+                },
+                {
+                    content: "Found some interesting ingredients in my local market today. Used the ingredient checker tool and learned so much about what I was buying. The AI analysis was super helpful! 📱",
+                    author: "HealthNut",
+                    likes: ["FoodExplorer"],
+                    comments: [],
+                    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+                    updatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000)
+                },
+                {
+                    content: "Anyone have recommendations for healthy alternatives to processed snacks? I'm trying to make better food choices and the healthier alternatives tool has been a game changer! 🌱",
+                    author: "ThaiFoodie",
+                    likes: ["FoodExplorer", "HealthNut"],
+                    comments: [],
+                    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+                    updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000)
+                },
+                {
+                    content: "The nutrition analysis tool is incredible! I scanned a product and got detailed nutritional info instantly. Makes grocery shopping so much easier and healthier! 📊",
+                    author: "NutritionGuru",
+                    likes: ["FoodExplorer", "HealthNut", "ThaiFoodie"],
+                    comments: [],
+                    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
+                    updatedAt: new Date(Date.now() - 8 * 60 * 60 * 1000)
+                },
+                {
+                    content: "Just used the diet recommendations tool and got personalized suggestions based on my profile. The AI really understands my dietary preferences! Highly recommend trying it out! 🎯",
+                    author: "WellnessSeeker",
+                    likes: ["NutritionGuru", "HealthNut"],
+                    comments: [],
+                    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+                    updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000)
+                }
+            ];
+            
+            await postsCollection.insertMany(samplePosts);
+            console.log('Sample posts created successfully!');
+        }
+    } catch (error) {
+        console.error('Error creating sample posts:', error);
     }
 }
 
@@ -531,6 +598,25 @@ app.get('/api/user/preferences', async (req, res) => {
     }
 });
 
+// Get user preferences by username (for ingredient checker)
+app.get('/api/user/:username/preferences', async (req, res) => {
+    try {
+        const { username } = req.params;
+        if (!username) {
+            return res.status(400).json({ message: 'Username required.' });
+        }
+        const userPrefsCollection = dbManager.getCollection('user_preferences');
+        const prefs = await userPrefsCollection.findOne({ username });
+        if (!prefs) {
+            return res.status(404).json({ message: 'Preferences not found.' });
+        }
+        res.json(prefs);
+    } catch (error) {
+        console.error('Get preferences error:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
 // --- User Scan History Endpoint ---
 const { MongoClient, ObjectId } = require('mongodb');
 
@@ -564,20 +650,22 @@ app.get('/api/user/:username/products', authenticateSession, async (req, res) =>
 });
 
 // Store tool usage history per user
-app.post('/api/user/:username/tool-history', authenticateSession, async (req, res) => {
+app.post('/api/user/:username/tool-history', async (req, res) => {
     const username = req.params.username;
     const { tool, input, result } = req.body;
     if (!tool || !input || !result) {
         return res.status(400).json({ error: 'tool, input, and result are required' });
     }
     try {
+        console.log('Saving tool history for user:', username, { tool, input, result });
         const toolHistoryCollection = await dbManager.getUserCollection(username, 'tool_history');
-        await toolHistoryCollection.insertOne({
+        const savedResult = await toolHistoryCollection.insertOne({
             tool,
             input,
             result,
             createdAt: new Date()
         });
+        console.log('Tool history saved successfully:', savedResult);
         res.json({ message: 'Tool usage saved.' });
     } catch (err) {
         console.error('Error saving tool history:', err);
@@ -585,28 +673,734 @@ app.post('/api/user/:username/tool-history', authenticateSession, async (req, re
     }
 });
 
+// Get tool usage history per user
+app.get('/api/user/:username/tool-history', async (req, res) => {
+    const username = req.params.username;
+    if (!username) return res.status(400).json({ error: 'Username required' });
+    try {
+        console.log('Fetching tool history for user:', username);
+        const toolHistoryCollection = await dbManager.getUserCollection(username, 'tool_history');
+        const history = await toolHistoryCollection
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
+        console.log('Found tool history entries:', history.length);
+        res.json(history);
+    } catch (err) {
+        console.error('Error fetching tool history:', err);
+        res.status(500).json({ error: 'Failed to fetch tool history' });
+    }
+});
+
 app.post('/api/ingredient-checker', async (req, res) => {
     try {
-        const { ingredients, options } = req.body;
-        if (!ingredients || !Array.isArray(options)) {
-            return res.status(400).json({ error: 'Ingredients and options are required.' });
+        console.log('Ingredient checker request received:', req.body);
+        const { ingredients, profile } = req.body;
+        if (!ingredients) {
+            console.log('No ingredients provided');
+            return res.status(400).json({ error: 'Ingredients are required.' });
         }
-        // Build a prompt for GPT-4o
-        const prompt = `You are an expert food ingredient checker. A user has entered the following ingredients: ${ingredients}.\nThey want to check for: ${options.join(', ')}.\nFor each option, list any ingredients that violate it, and explain why. If all are safe, say so. Be concise and clear.`;
-        const completion = await openai.createChatCompletion({
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            if (profile.likes && profile.likes.trim()) {
+                fields.push(`Food Likes: ${profile.likes}`);
+                hasProfile = true;
+            }
+            if (profile.dislikes && profile.dislikes.trim()) {
+                fields.push(`Food Dislikes: ${profile.dislikes}`);
+                hasProfile = true;
+            }
+            if (profile.age && profile.age > 0) {
+                fields.push(`Age: ${profile.age} years`);
+                hasProfile = true;
+            }
+            if (profile.weight && profile.weight > 0) {
+                fields.push(`Weight: ${profile.weight} kg`);
+                hasProfile = true;
+            }
+            if (profile.height && profile.height > 0) {
+                fields.push(`Height: ${profile.height} cm`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a nutritionist and food safety expert. Analyze ingredients based on user profile and provide clear, helpful advice.`;
+        
+        const userPrompt = `${profileText}Analyze these ingredients: ${ingredients}
+
+${hasProfile ? 'Based on the user\'s profile, check:' : 'Provide general analysis:'}
+- Allergens and safety concerns
+- Nutritional value and health benefits  
+- Dietary restrictions and preferences
+- Health goal alignment
+- Alternative suggestions if needed
+
+Format response with:
+✅ Safe ingredients
+⚠️ Caution items (with reasons)
+❌ Avoid items (with alternatives)
+💡 Recommendations
+
+Be concise and specific.`;
+
+        const completion = await openai.chat.completions.create({
             model: 'gpt-4o',
             messages: [
-                { role: 'system', content: 'You are a helpful food ingredient checker assistant.' },
-                { role: 'user', content: prompt }
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
             ],
-            max_tokens: 400,
-            temperature: 0.2
+            max_tokens: 500,
+            temperature: 0.3
         });
-        const result = completion.data.choices[0].message.content;
+        
+        const result = completion.choices[0].message.content;
         res.json({ result });
     } catch (error) {
         console.error('OpenAI error:', error.response?.data || error.message);
         res.status(500).json({ error: 'Failed to check ingredients.' });
+    }
+});
+
+app.post('/api/health-evaluation', async (req, res) => {
+    try {
+        console.log('Health evaluation request received:', req.body);
+        const { foods, profile } = req.body;
+        if (!foods) {
+            console.log('No foods provided');
+            return res.status(400).json({ error: 'Foods are required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            if (profile.likes && profile.likes.trim()) {
+                fields.push(`Food Likes: ${profile.likes}`);
+                hasProfile = true;
+            }
+            if (profile.dislikes && profile.dislikes.trim()) {
+                fields.push(`Food Dislikes: ${profile.dislikes}`);
+                hasProfile = true;
+            }
+            if (profile.age && profile.age > 0) {
+                fields.push(`Age: ${profile.age} years`);
+                hasProfile = true;
+            }
+            if (profile.weight && profile.weight > 0) {
+                fields.push(`Weight: ${profile.weight} kg`);
+                hasProfile = true;
+            }
+            if (profile.height && profile.height > 0) {
+                fields.push(`Height: ${profile.height} cm`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a nutritionist and health expert. Evaluate foods for their health impact, nutritional value, and compatibility with user profiles. Provide comprehensive health assessments.`;
+        
+        const userPrompt = `${profileText}Evaluate the health impact of these foods: ${foods}
+
+${hasProfile ? 'Based on the user\'s profile, assess:' : 'Provide general health assessment:'}
+- Overall nutritional value and health benefits
+- Potential health risks or concerns
+- Compatibility with dietary restrictions and preferences
+- Impact on health goals and fitness objectives
+- Recommended portion sizes and frequency
+- Healthier alternatives if applicable
+
+Format response with:
+✅ Health Benefits
+⚠️ Health Considerations  
+❌ Health Risks (if any)
+💡 Recommendations
+📊 Nutritional Highlights
+
+Be comprehensive, evidence-based, and actionable.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 600,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to evaluate health impact.' });
+    }
+});
+
+app.post('/api/nutrition-analysis', async (req, res) => {
+    try {
+        console.log('Nutrition analysis request received:', req.body);
+        const { foods, profile } = req.body;
+        if (!foods) {
+            console.log('No foods provided');
+            return res.status(400).json({ error: 'Foods are required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            if (profile.age && profile.age > 0) {
+                fields.push(`Age: ${profile.age} years`);
+                hasProfile = true;
+            }
+            if (profile.weight && profile.weight > 0) {
+                fields.push(`Weight: ${profile.weight} kg`);
+                hasProfile = true;
+            }
+            if (profile.height && profile.height > 0) {
+                fields.push(`Height: ${profile.height} cm`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a nutritionist. Provide concise nutritional analysis with calorie estimates, macronutrients, and key vitamins/minerals. Keep responses under 100 words.`;
+        
+        const userPrompt = `${profileText}Analyze the nutrition of: ${foods}
+
+${hasProfile ? 'Consider the user\'s profile for personalized insights:' : 'Provide general nutritional analysis:'}
+- Estimated calories per serving
+- Key macronutrients (protein, carbs, fat)
+- Important vitamins and minerals
+- Health benefits and considerations
+
+Format: Brief, factual, under 100 words.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to analyze nutrition.' });
+    }
+});
+
+app.post('/api/healthier-alternatives', async (req, res) => {
+    try {
+        console.log('Healthier alternatives request received:', req.body);
+        const { foods, profile } = req.body;
+        if (!foods) {
+            console.log('No foods provided');
+            return res.status(400).json({ error: 'Foods are required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            if (profile.likes && profile.likes.trim()) {
+                fields.push(`Food Likes: ${profile.likes}`);
+                hasProfile = true;
+            }
+            if (profile.dislikes && profile.dislikes.trim()) {
+                fields.push(`Food Dislikes: ${profile.dislikes}`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a nutritionist. Suggest healthier alternatives to foods, considering nutritional value, taste, and accessibility. Keep responses under 100 words.`;
+        
+        const userPrompt = `${profileText}Suggest healthier alternatives to: ${foods}
+
+${hasProfile ? 'Consider the user\'s profile for personalized suggestions:' : 'Provide general alternatives:'}
+- More nutritious options
+- Similar taste/texture alternatives
+- Easy to find substitutes
+- Health benefits of alternatives
+
+Format: Brief, practical, under 100 words.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to find alternatives.' });
+    }
+});
+
+app.post('/api/ingredient-substitution', async (req, res) => {
+    try {
+        console.log('Ingredient substitution request received:', req.body);
+        const { ingredients, profile } = req.body;
+        if (!ingredients) {
+            console.log('No ingredients provided');
+            return res.status(400).json({ error: 'Ingredients are required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.likes && profile.likes.trim()) {
+                fields.push(`Food Likes: ${profile.likes}`);
+                hasProfile = true;
+            }
+            if (profile.dislikes && profile.dislikes.trim()) {
+                fields.push(`Food Dislikes: ${profile.dislikes}`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a culinary expert. Suggest practical ingredient substitutes that maintain similar taste, texture, and cooking properties. Keep responses under 100 words.`;
+        
+        const userPrompt = `${profileText}Suggest substitutes for: ${ingredients}
+
+${hasProfile ? 'Consider the user\'s profile for suitable alternatives:' : 'Provide general substitutes:'}
+- Similar taste and texture
+- Easy to find alternatives
+- Cooking compatibility
+- Nutritional considerations
+
+Format: Brief, practical, under 100 words.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to find substitutes.' });
+    }
+});
+
+app.post('/api/reviews-analysis', async (req, res) => {
+    try {
+        console.log('Reviews analysis request received:', req.body);
+        const { review, profile } = req.body;
+        if (!review) {
+            console.log('No review provided');
+            return res.status(400).json({ error: 'Review is required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a food safety and nutrition expert. Analyze user reviews and safety reports, providing helpful insights and recommendations. Keep responses under 100 words.`;
+        
+        const userPrompt = `${profileText}Analyze this review/report: ${review}
+
+${hasProfile ? 'Consider the user\'s profile for personalized insights:' : 'Provide general analysis:'}
+- Safety concerns or benefits
+- Nutritional insights
+- Recommendations
+- Similar experiences
+
+Format: Brief, helpful, under 100 words.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to analyze review.' });
+    }
+});
+
+app.post('/api/diet-recommendations', async (req, res) => {
+    try {
+        console.log('Diet recommendations request received:', req.body);
+        const { preferences, profile } = req.body;
+        if (!preferences) {
+            console.log('No preferences provided');
+            return res.status(400).json({ error: 'Dietary preferences are required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.age && profile.age.trim()) {
+                fields.push(`Age: ${profile.age}`);
+                hasProfile = true;
+            }
+            if (profile.weight && profile.weight.trim()) {
+                fields.push(`Weight: ${profile.weight}`);
+                hasProfile = true;
+            }
+            if (profile.height && profile.height.trim()) {
+                fields.push(`Height: ${profile.height}`);
+                hasProfile = true;
+            }
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a nutritionist and diet expert. Provide personalized diet recommendations based on user preferences and profile. Keep responses under 100 words.`;
+        
+        const userPrompt = `${profileText}Dietary Preferences/Goals: ${preferences}
+
+${hasProfile ? 'Provide personalized recommendations based on the user\'s profile:' : 'Provide general diet recommendations:'}
+- Meal suggestions
+- Food choices
+- Portion guidance
+- Timing recommendations
+
+Format: Brief, practical, under 100 words.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to get diet recommendations.' });
+    }
+});
+
+app.post('/api/symptom-logger', async (req, res) => {
+    try {
+        console.log('Symptom logger request received:', req.body);
+        const { symptoms, profile } = req.body;
+        if (!symptoms) {
+            console.log('No symptoms provided');
+            return res.status(400).json({ error: 'Symptoms are required.' });
+        }
+        
+        // Build personalized prompt using user profile
+        let profileText = '';
+        let hasProfile = false;
+        
+        if (profile && typeof profile === 'object') {
+            const fields = [];
+            if (profile.age && profile.age.trim()) {
+                fields.push(`Age: ${profile.age}`);
+                hasProfile = true;
+            }
+            if (profile.allergies && profile.allergies.trim()) {
+                fields.push(`Allergies: ${profile.allergies}`);
+                hasProfile = true;
+            }
+            if (profile.dietary && profile.dietary.trim()) {
+                fields.push(`Dietary Restrictions: ${profile.dietary}`);
+                hasProfile = true;
+            }
+            if (profile.goals && profile.goals.trim()) {
+                fields.push(`Health Goals: ${profile.goals}`);
+                hasProfile = true;
+            }
+            
+            if (fields.length > 0) {
+                profileText = `User Profile:\n${fields.join('\n')}\n\n`;
+            }
+        }
+        
+        const systemPrompt = `You are a health expert. Analyze symptoms and food patterns to provide insights and suggestions. Keep responses under 100 words.`;
+        
+        const userPrompt = `${profileText}Symptoms and Foods: ${symptoms}
+
+${hasProfile ? 'Consider the user\'s profile for personalized insights:' : 'Provide general analysis:'}
+- Potential triggers
+- Pattern recognition
+- Dietary suggestions
+- Monitoring advice
+
+Format: Brief, helpful, under 100 words.`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 150,
+            temperature: 0.3
+        });
+        
+        const result = completion.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to analyze symptoms.' });
+    }
+});
+
+// Community posts endpoints
+app.get('/api/community/posts', async (req, res) => {
+    try {
+        console.log('Fetching community posts');
+        const postsCollection = dbManager.getCommunityCollection();
+        const posts = await postsCollection.find({}).sort({ createdAt: -1 }).limit(50).toArray();
+        
+        console.log(`Found ${posts.length} posts`);
+        res.json({ posts });
+    } catch (error) {
+        console.error('Error fetching community posts:', error);
+        res.status(500).json({ error: 'Failed to fetch posts.' });
+    }
+});
+
+app.post('/api/community/posts', async (req, res) => {
+    try {
+        console.log('Creating community post:', req.body);
+        const { content, author } = req.body;
+        
+        if (!content || !author) {
+            return res.status(400).json({ error: 'Content and author are required.' });
+        }
+        
+        const postsCollection = dbManager.getCommunityCollection();
+        const newPost = {
+            content: content,
+            author: author,
+            likes: [],
+            comments: [],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+        
+        const result = await postsCollection.insertOne(newPost);
+        console.log('Post created with ID:', result.insertedId);
+        
+        res.json({ 
+            success: true, 
+            postId: result.insertedId,
+            message: 'Post created successfully' 
+        });
+    } catch (error) {
+        console.error('Error creating community post:', error);
+        res.status(500).json({ error: 'Failed to create post.' });
+    }
+});
+
+app.post('/api/community/posts/:postId/like', async (req, res) => {
+    try {
+        console.log('Liking post:', req.params.postId, req.body);
+        const { username } = req.body;
+        const postId = req.params.postId;
+        
+        if (!username) {
+            return res.status(400).json({ error: 'Username is required.' });
+        }
+        
+        const postsCollection = dbManager.getCommunityCollection();
+        const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+        
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found.' });
+        }
+        
+        // Toggle like
+        const isLiked = post.likes && post.likes.includes(username);
+        const updateOperation = isLiked 
+            ? { $pull: { likes: username } }
+            : { $addToSet: { likes: username } };
+        
+        await postsCollection.updateOne(
+            { _id: new ObjectId(postId) },
+            updateOperation
+        );
+        
+        console.log(`Post ${postId} ${isLiked ? 'unliked' : 'liked'} by ${username}`);
+        res.json({ 
+            success: true, 
+            liked: !isLiked,
+            message: `Post ${isLiked ? 'unliked' : 'liked'} successfully` 
+        });
+    } catch (error) {
+        console.error('Error liking post:', error);
+        res.status(500).json({ error: 'Failed to like post.' });
+    }
+});
+
+// API endpoint that simulates unavailable service
+app.post('/api/scan-code', async (req, res) => {
+    try {
+        console.log('Scan code request received:', req.body);
+        const { code, imageBase64 } = req.body;
+        
+        // Simulate API unavailable error
+        console.log('Simulating API unavailable error');
+        res.status(503).json({ 
+            error: 'API Unavailable', 
+            message: 'The scanning service is temporarily unavailable. Please try again later.',
+            code: 'SERVICE_UNAVAILABLE'
+        });
+        
+    } catch (error) {
+        console.error('Scan API error:', error);
+        res.status(503).json({ 
+            error: 'API Unavailable',
+            message: 'Service temporarily down. Please try again later.',
+            code: 'SERVICE_UNAVAILABLE'
+        });
     }
 });
 

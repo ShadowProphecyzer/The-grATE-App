@@ -1,8 +1,4 @@
 html, body {
-    height: 100%;
-    width: 100vw;
-    overflow-x: hidden;
-    overflow-y: auto;
     margin: 0;
     padding: 0;
 }
@@ -14,9 +10,8 @@ body#dashboard-body {
 }
 
 #dashboard-container {
-    min-height: 100vh;
-    max-height: none;
-    overflow-y: visible;
+    box-sizing: border-box;
+    /* No overflow or min-height here */
 }
 
 .user-details-section {

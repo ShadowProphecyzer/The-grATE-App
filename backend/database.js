@@ -47,6 +47,11 @@ class DatabaseManager {
         const userDb = await this.getUserDatabase(username);
         return userDb.collection(collectionName);
     }
+
+    // Get community collection
+    getCommunityCollection() {
+        return this.db.collection('community_posts');
+    }
 }
 
 module.exports = DatabaseManager; 

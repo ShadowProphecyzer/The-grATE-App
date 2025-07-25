@@ -25,8 +25,8 @@
         <!-- Promo Card -->
         <div id="promo-card">
             <div id="promo-text">
-                <div>Scan History</div>
-                <div class="promo-desc">View your scan and report history</div>
+                <div>Action History</div>
+                <div class="promo-desc">View your scan and tool usage history</div>
             </div>
             <div id="promo-img">
                 <i class="fa fa-history" style="font-size:2.5rem;color:#F26522;"></i>
@@ -40,16 +40,17 @@
             <button class="close-settings-btn">&times;</button>
             <h2>History Page Instructions</h2>
             <ul>
-                <li>View your scan and report history here.</li>
+                <li>View your scan and tool usage history here.</li>
+                <li>Click on any entry to see full details.</li>
+                <li>All your actions are automatically saved.</li>
             </ul>
         </div>
     </div>
     <!-- Modal for full processing info -->
     <div id="history-modal" class="modal" style="display:none;">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:90%;max-height:90%;overflow-y:auto;">
             <span class="close-btn">&times;</span>
-            <h2>Scan Details</h2>
-            <div id="modal-details"></div>
+            <div id="modal-details" style="padding:20px;"></div>
         </div>
     </div>
     <!-- Bottom Navigation -->

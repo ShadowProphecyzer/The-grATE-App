@@ -311,19 +311,112 @@ function handleQRCodeDetected(qrData) {
     processQRCode(qrData);
 }
 
-function processQRCode(qrData) {
+async function processQRCode(qrData) {
     // Handle the QR code data
     console.log('Processing QR code:', qrData);
     
-    // You can add your logic here to handle different types of QR codes
-    // For example, redirect to a URL, show product info, etc.
+    // Show loading state
+    document.querySelector('.scanner-text').textContent = 'Processing code...';
+    document.querySelector('.scanner-text').style.color = '#F26522';
     
-    // Reset scanner after a delay
+    try {
+        // Call the scan API endpoint
+        const response = await fetch('/api/scan-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                code: qrData,
+                imageBase64: null // Could be added if needed
+            })
+        });
+        
+        const data = await response.json();
+        console.log('Scan API response:', data);
+        
+        if (response.status === 503) {
+            // API unavailable
+            showAPIError();
+        } else if (response.ok) {
+            // Success case (though this won't happen with current implementation)
+            console.log('Scan successful:', data);
+            document.querySelector('.scanner-text').textContent = 'Code processed successfully!';
+            document.querySelector('.scanner-text').style.color = '#4CAF50';
+            
+            setTimeout(() => {
+                document.querySelector('.scanner-text').textContent = 'Position QR code within frame';
+                document.querySelector('.scanner-text').style.color = '#fff';
+                startCamera();
+            }, 2000);
+        } else {
+            // Other error
+            showAPIError();
+        }
+        
+    } catch (error) {
+        console.error('Error calling scan API:', error);
+        showAPIError();
+    }
+}
+
+function showAPIError() {
+    // Stop camera
+    stopCamera();
+    
+    // Show error message
+    document.querySelector('.scanner-text').textContent = 'API Unavailable - Service temporarily down';
+    document.querySelector('.scanner-text').style.color = '#ff6b6b';
+    
+    // Create error overlay
+    let errorOverlay = document.getElementById('api-error-overlay');
+    if (!errorOverlay) {
+        errorOverlay = document.createElement('div');
+        errorOverlay.id = 'api-error-overlay';
+        errorOverlay.style.position = 'fixed';
+        errorOverlay.style.top = '50%';
+        errorOverlay.style.left = '50%';
+        errorOverlay.style.transform = 'translate(-50%, -50%)';
+        errorOverlay.style.background = '#fff';
+        errorOverlay.style.borderRadius = '12px';
+        errorOverlay.style.padding = '24px';
+        errorOverlay.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+        errorOverlay.style.zIndex = 1000;
+        errorOverlay.style.maxWidth = '300px';
+        errorOverlay.style.textAlign = 'center';
+        errorOverlay.innerHTML = `
+            <div style="margin-bottom: 16px;">
+                <i class="fa fa-exclamation-triangle" style="color: #ff6b6b; font-size: 3rem;"></i>
+            </div>
+            <h3 style="margin: 0 0 12px 0; color: #1a2340;">API Unavailable</h3>
+            <p style="margin: 0 0 20px 0; color: #666; line-height: 1.4;">
+                The scanning service is temporarily unavailable. Please try again later or use manual code entry.
+            </p>
+            <button id="retry-scan-btn" style="background: #F26522; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                Try Again
+            </button>
+        `;
+        document.body.appendChild(errorOverlay);
+        
+        // Add retry functionality
+        const retryBtn = document.getElementById('retry-scan-btn');
+        retryBtn.addEventListener('click', function() {
+            errorOverlay.remove();
+            document.querySelector('.scanner-text').textContent = 'Position QR code within frame';
+            document.querySelector('.scanner-text').style.color = '#fff';
+            startCamera();
+        });
+    } else {
+        errorOverlay.style.display = 'block';
+    }
+    
+    // Auto-hide error after 10 seconds
     setTimeout(() => {
-        document.querySelector('.scanner-text').textContent = 'Position QR code within frame';
-        document.querySelector('.scanner-text').style.color = '#fff';
-        startCamera();
-    }, 2000);
+        if (errorOverlay && errorOverlay.style.display !== 'none') {
+            errorOverlay.remove();
+            document.querySelector('.scanner-text').textContent = 'Position QR code within frame';
+            document.querySelector('.scanner-text').style.color = '#fff';
+            startCamera();
+        }
+    }, 10000);
 }
 
 function stopCamera() {
@@ -468,11 +561,11 @@ function takePhoto() {
         console.error('Error queueing image for processing:', err);
     });
     
-    // Hold loading overlay for exactly 5 seconds, then redirect
+    // Simulate API error after 3 seconds
     setTimeout(() => {
         hideLoadingOverlay();
-        window.location.href = 'product.html';
-    }, 5000);
+        showAPIError();
+    }, 3000);
 }
 
 function showPhotoFeedback() {
@@ -629,11 +722,11 @@ if (uploadButton) {
                 .catch(err => {
                     console.error('Error queueing image for processing:', err);
                 });
-                // Hold loading overlay for exactly 5 seconds, then redirect
+                // Simulate API error after 3 seconds
                 setTimeout(() => {
                     hideLoadingOverlay();
-                    window.location.href = 'product.html';
-                }, 5000);
+                    showAPIError();
+                }, 3000);
             };
             reader.readAsDataURL(file);
         };
@@ -677,10 +770,10 @@ if (submitCodeBtn && manualCodeInput) {
             manualCodeInput.focus();
             return;
         }
-        // TODO: handle the submitted code (e.g., processQRCode(code) or similar)
-        showFeedback('Submitted code: ' + code, false);
-        manualCodeInput.value = '';
-        manualCodeInputContainer.style.display = 'none';
+            // Process the submitted code
+    processQRCode(code);
+    manualCodeInput.value = '';
+    manualCodeInputContainer.style.display = 'none';
     });
 }
 

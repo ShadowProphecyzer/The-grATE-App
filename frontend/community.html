@@ -3,9 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Community - grATE App</title>
+    <title>Community - grATE App</title>
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        #dashboard-container {
+            box-sizing: border-box;
+        }
+        .create-post-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .post-input {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        .post-button {
+            background: #F26522;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            float: right;
+        }
+        .post-button:hover {
+            background: #d94e0f;
+        }
+        .post-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .community-feed {
+            margin: 20px;
+        }
+        .post-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #F26522;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .post-author {
+            font-weight: bold;
+            color: #1a2340;
+        }
+        .post-time {
+            color: #666;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+        .post-content {
+            color: #1a2340;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .post-actions {
+            display: flex;
+            gap: 20px;
+            color: #666;
+        }
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .post-action:hover {
+            background: #f5f5f5;
+        }
+        .post-action.liked {
+            color: #F26522;
+        }
+        .empty-community {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .empty-community i {
+            font-size: 3rem;
+            color: #F26522;
+            margin-bottom: 15px;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: #F26522;
+        }
+    </style>
 </head>
 <body id="dashboard-body">
     <div id="dashboard-container">
@@ -20,35 +140,59 @@
                 <i class="fa fa-cog"></i>
             </div>
         </div>
-        <!-- Page Title -->
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel" style="display:none;">
+            <div class="settings-panel-content">
+                <button id="close-settings-panel" class="close-settings-btn">&times;</button>
+                <h2>Community Instructions</h2>
+                <ul>
+                    <li>Share your food experiences and discoveries with the community.</li>
+                    <li>Create posts to share insights, tips, or questions.</li>
+                    <li>Like and interact with other community members' posts.</li>
+                    <li>Be respectful and helpful to fellow community members.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Promo Card -->
         <div id="promo-card">
             <div id="promo-text">
-                <div>My Community</div>
-                <div class="promo-desc">Observe your neighbourhood</div>
+                <div>Community</div>
+                <div class="promo-desc">Share and discover with fellow food enthusiasts</div>
             </div>
             <div id="promo-img">
                 <i class="fa fa-users" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
         </div>
-        <!-- Photos Content -->
-        <div id="photos-container">
-            <div class="empty-state">
-                <i class="fa fa-camera"></i>
-                <h3>Community Coming Soon</h3>
-                <p>No posts yet. Start scanning to engage with the community!</p>
+        
+        <!-- Create Post Section -->
+        <div class="create-post-section">
+            <h3 style="margin-bottom: 15px; color: #1a2340;">
+                <i class="fa fa-edit" style="color: #F26522; margin-right: 8px;"></i>
+                Create a Post
+            </h3>
+            <textarea id="post-input" class="post-input" placeholder="Share your food experience, tips, or ask a question..."></textarea>
+            <button id="create-post-btn" class="post-button">
+                <i class="fa fa-paper-plane" style="margin-right: 5px;"></i>
+                Post
+            </button>
+            <div style="clear: both;"></div>
+        </div>
+        
+        <!-- Community Feed -->
+        <div class="community-feed">
+            <h3 style="margin-bottom: 15px; color: #1a2340;">
+                <i class="fa fa-rss" style="color: #F26522; margin-right: 8px;"></i>
+                Community Feed
+            </h3>
+            <div id="posts-container">
+                <div class="loading-spinner">
+                    <i class="fa fa-spinner fa-spin"></i>
+                    <p>Loading community posts...</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="settings-panel" style="display:none;">
-        <div class="settings-panel-content">
-            <button class="close-settings-btn">&times;</button>
-            <h2>Communtiy Page Instructions</h2>
-            <ul>
-                <li>View and manage your community here.</li>
-                <li>More features coming soon!</li>
-            </ul>
-        </div>
-    </div>
+    
     <!-- Bottom Navigation -->
     <div id="bottom-nav">
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
@@ -57,6 +201,26 @@
         <div class="nav-item active"><i class="fa fa-users"></i><span>Community</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
+    
     <script src="community.js"></script>
+    <script>
+    // Settings panel logic for cog icon
+    document.addEventListener('DOMContentLoaded', function() {
+        const settingsPanel = document.querySelector('.settings-panel');
+        const closeSettingsBtn = document.querySelector('.close-settings-btn');
+        const cogIcon = document.querySelector('#header-icons .fa-cog');
+        if (cogIcon && settingsPanel && closeSettingsBtn) {
+            cogIcon.addEventListener('click', function() {
+                settingsPanel.style.display = 'flex';
+            });
+            closeSettingsBtn.addEventListener('click', function() {
+                settingsPanel.style.display = 'none';
+            });
+            settingsPanel.addEventListener('click', function(e) {
+                if (e.target === settingsPanel) settingsPanel.style.display = 'none';
+            });
+        }
+    });
+    </script>
 </body>
 </html> 

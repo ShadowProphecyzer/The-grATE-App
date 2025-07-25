@@ -3,35 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingredient Substitution</title>
+    <title>Ingredient Substitution - grATE App</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        #dashboard-container {
+            box-sizing: border-box;
+        }
+        #ingredient-sub-result {
+            word-break: break-word;
+            background: #fffbe9;
+            border: 1.5px solid #f2c892;
+            border-radius: 14px;
+            padding: 18px 18px 14px 18px;
+            margin-top: 18px;
+            font-size: 1.08rem;
+            color: #1a2340;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #F26522 #f2c892;
+        }
+        
+        #ingredient-sub-result::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #ingredient-sub-result::-webkit-scrollbar-track {
+            background: #f2c892;
+            border-radius: 4px;
+        }
+        
+        #ingredient-sub-result::-webkit-scrollbar-thumb {
+            background: #F26522;
+            border-radius: 4px;
+        }
+        
+        #ingredient-sub-result::-webkit-scrollbar-thumb:hover {
+            background: #d94e0f;
+        }
+    </style>
 </head>
-<body id="community-body">
-    <div id="community-main-bg">
-        <div id="community-card">
-            <div id="scanner-header">
-                <div id="greeting"></div>
-                <div id="header-icons">
-                    <i class="fa fa-cog"></i>
-                </div>
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
             </div>
-            <h1 id="community-title">Ingredient Substitution</h1>
-            <form id="ingredient-sub-form">
-                <input id="ingredient-sub-input" placeholder="Enter ingredient" style="width:100%;margin-bottom:10px;padding:8px;border-radius:6px;border:1px solid #ccc;" />
-                <button type="submit" style="width:100%;background:#F26522;color:#fff;border:none;padding:10px 0;border-radius:8px;font-size:1rem;">Suggest Substitutes</button>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
+            </div>
+        </div>
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel" style="display:none;">
+            <div class="settings-panel-content">
+                <button id="close-settings-panel" class="close-settings-btn">&times;</button>
+                <h2>Ingredient Substitution Instructions</h2>
+                <ul>
+                    <li>Enter ingredients to find suitable substitutes.</li>
+                    <li>Your personal details from the Profile page will be used for personalized suggestions.</li>
+                    <li>The AI will suggest practical substitutes (max 100 words).</li>
+                    <li>Results are private and automatically saved to your history.</li>
+                    <li>This tool is not a substitute for medical advice.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>Ingredient Substitution</div>
+                <div class="promo-desc">Find suitable substitutes for ingredients</div>
+            </div>
+            <div id="promo-img">
+                <i class="fa fa-exchange-alt" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+        <!-- Substitute Content -->
+        <div id="ingredient-sub-container">
+            <form id="ingredient-sub-form" style="display:flex;flex-direction:column;gap:12px;align-items:center;max-width:340px;margin:0 auto;">
+                <textarea id="ingredient-sub-input" placeholder="Enter ingredients (e.g., eggs, butter, flour)" rows="2" style="width:90%;min-width:180px;max-width:320px;min-height:36px;max-height:80px;border-radius:12px;padding:8px 10px;font-size:1rem;"></textarea>
+                <button type="submit" style="width:100%;background:#F26522;color:#fff;border:none;padding:12px 0;border-radius:8px;font-size:1rem;">Find Substitutes</button>
             </form>
-            <div id="ingredient-sub-result" style="margin-top:16px;"></div>
+            <div id="ingredient-sub-result" style="margin-top:16px;text-align:center;"></div>
         </div>
     </div>
+    <!-- Bottom Navigation -->
     <div id="bottom-nav">
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
         <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
         <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
-        <div class="nav-item"><i class="fa fa-users"></i><span>Community</span></div>
+        <div class="nav-item"><i class="fa fa-question-circle"></i><span>Help</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
     <script src="ingredient-sub.js"></script>
+    <script>
+    // Settings panel logic for cog icon
+    document.addEventListener('DOMContentLoaded', function() {
+        const settingsPanel = document.querySelector('.settings-panel');
+        const closeSettingsBtn = document.querySelector('.close-settings-btn');
+        const cogIcon = document.querySelector('#header-icons .fa-cog');
+        if (cogIcon && settingsPanel && closeSettingsBtn) {
+            cogIcon.addEventListener('click', function() {
+                settingsPanel.style.display = 'flex';
+            });
+            closeSettingsBtn.addEventListener('click', function() {
+                settingsPanel.style.display = 'none';
+            });
+            settingsPanel.addEventListener('click', function(e) {
+                if (e.target === settingsPanel) settingsPanel.style.display = 'none';
+            });
+        }
+    });
+    </script>
 </body>
 </html> 

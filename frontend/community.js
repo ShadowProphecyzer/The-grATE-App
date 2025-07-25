@@ -2,115 +2,226 @@
 if (!localStorage.getItem('username')) {
     window.location.href = 'account.html';
 }
-// Photos page functionality
-console.log('[Photos] Script loaded');
+
+// Community page functionality
+console.log('[Community] Script loaded');
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Photos] DOMContentLoaded');
-    loadUserPhotos();
+    console.log('[Community] DOMContentLoaded');
+    loadCommunityPosts();
     setGreeting();
     setupNavigation();
+    setupCreatePost();
 });
 
-async function loadUserPhotos() {
-    console.log('[Photos] Loading user photos...');
+// Load community posts
+async function loadCommunityPosts() {
+    console.log('[Community] Loading community posts...');
     try {
-        const username = localStorage.getItem('username');
-        console.log('[Photos] Username:', username);
-        if (!username) {
-            showEmptyState('Please log in to view your photos');
-            return;
-        }
-
-        const response = await fetch(`/api/user/${encodeURIComponent(username)}/photos`);
+        const response = await fetch('/api/community/posts');
         const data = await response.json();
-        console.log('[Photos] API response:', data);
+        console.log('[Community] API response:', data);
 
         if (response.ok) {
-            displayPhotos(data.photos);
+            displayPosts(data.posts || []);
         } else {
-            showEmptyState('Error loading photos: ' + data.message);
+            showEmptyState('Error loading posts: ' + (data.message || 'Unknown error'));
         }
     } catch (error) {
-        console.error('[Photos] Error loading photos:', error);
-        showEmptyState('Error loading photos. Please try again.');
+        console.error('[Community] Error loading posts:', error);
+        showEmptyState('Error loading posts. Please try again.');
     }
 }
 
-function displayPhotos(photos) {
-    console.log('[Photos] Displaying photos:', photos);
-    const container = document.getElementById('photos-container');
+// Display posts in the feed
+function displayPosts(posts) {
+    console.log('[Community] Displaying posts:', posts);
+    const container = document.getElementById('posts-container');
     
-    if (!photos || photos.length === 0) {
-        showEmptyState('No posts yet. Start scanning to engage with the community!');
+    if (!posts || posts.length === 0) {
+        showEmptyState('No posts yet. Be the first to share something!');
         return;
     }
 
-    const photosGrid = document.createElement('div');
-    photosGrid.className = 'photos-grid';
+    // Sort posts by creation date (newest first)
+    posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    photos.forEach(photo => {
-        const photoCard = createPhotoCard(photo);
-        photosGrid.appendChild(photoCard);
-    });
-
-    container.innerHTML = '';
-    container.appendChild(photosGrid);
+    const postsHTML = posts.map(post => createPostCard(post)).join('');
+    container.innerHTML = postsHTML;
+    
+    // Add event listeners to like buttons
+    setupLikeButtons();
 }
 
-function createPhotoCard(photo) {
-    console.log('[Photos] Creating photo card:', photo);
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-
-    const image = document.createElement('img');
-    image.className = 'photo-image';
-    image.src = photo.imageBase64;
-    image.alt = photo.filename || 'Scanned photo';
-    image.onerror = function() {
-        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjI2NTIyIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+UGhvdG8gTm90IEF2YWlsYWJsZTwvdGV4dD4KPC9zdmc+';
-    };
-
-    const info = document.createElement('div');
-    info.className = 'photo-info';
-
-    const title = document.createElement('div');
-    title.className = 'photo-title';
-    title.textContent = photo.filename || 'Scanned Photo';
-
-    const date = document.createElement('div');
-    date.className = 'photo-date';
-    const uploadDate = new Date(photo.uploadedAt);
-    date.textContent = uploadDate.toLocaleDateString() + ' ' + uploadDate.toLocaleTimeString();
-
-    const source = document.createElement('div');
-    source.className = 'photo-source';
-    source.textContent = photo.source || 'scanner';
-
-    info.appendChild(title);
-    info.appendChild(date);
-    info.appendChild(source);
-
-    card.appendChild(image);
-    card.appendChild(info);
-
-    return card;
-}
-
-function showEmptyState(message) {
-    console.log('[Photos] Showing empty state:', message);
-    const container = document.getElementById('photos-container');
-    container.innerHTML = `
-        <div class="empty-state">
-            <i class="fa fa-camera"></i>
-            <h3>Community Coming Soon</h3>
-            <p>${message}</p>
-            <a href="scanner.html" class="scan-btn">
-                <i class="fa fa-camera"></i> Start Scanning
-            </a>
+// Create a post card
+function createPostCard(post) {
+    console.log('[Community] Creating post card:', post);
+    const currentUser = localStorage.getItem('username');
+    const isLiked = post.likes && post.likes.includes(currentUser);
+    const likeClass = isLiked ? 'liked' : '';
+    
+    return `
+        <div class="post-card" data-post-id="${post._id}">
+            <div class="post-header">
+                <div class="post-avatar">
+                    ${post.author.charAt(0).toUpperCase()}
+                </div>
+                <div class="post-author">${post.author}</div>
+                <div class="post-time">${formatDate(post.createdAt)}</div>
+            </div>
+            <div class="post-content">${post.content}</div>
+            <div class="post-actions">
+                <div class="post-action like-btn ${likeClass}" data-post-id="${post._id}">
+                    <i class="fa fa-heart"></i>
+                    <span class="like-count">${post.likes ? post.likes.length : 0}</span>
+                </div>
+                <div class="post-action">
+                    <i class="fa fa-comment"></i>
+                    <span>${post.comments ? post.comments.length : 0}</span>
+                </div>
+                <div class="post-action">
+                    <i class="fa fa-share"></i>
+                    <span>Share</span>
+                </div>
+            </div>
         </div>
     `;
 }
 
+// Setup like button functionality
+function setupLikeButtons() {
+    const likeButtons = document.querySelectorAll('.like-btn');
+    likeButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const postId = this.dataset.postId;
+            const currentUser = localStorage.getItem('username');
+            
+            if (!currentUser) {
+                alert('Please log in to like posts');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/community/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: currentUser })
+                });
+                
+                if (response.ok) {
+                    // Toggle like state
+                    this.classList.toggle('liked');
+                    const likeCount = this.querySelector('.like-count');
+                    const currentCount = parseInt(likeCount.textContent);
+                    likeCount.textContent = this.classList.contains('liked') ? currentCount + 1 : currentCount - 1;
+                } else {
+                    console.error('Failed to like post');
+                }
+            } catch (error) {
+                console.error('Error liking post:', error);
+            }
+        });
+    });
+}
+
+// Setup create post functionality
+function setupCreatePost() {
+    const postInput = document.getElementById('post-input');
+    const createPostBtn = document.getElementById('create-post-btn');
+    
+    // Enable/disable post button based on input
+    postInput.addEventListener('input', function() {
+        createPostBtn.disabled = !this.value.trim();
+    });
+    
+    // Create post on button click
+    createPostBtn.addEventListener('click', async function() {
+        const content = postInput.value.trim();
+        const currentUser = localStorage.getItem('username');
+        
+        if (!content) {
+            alert('Please enter some content for your post');
+            return;
+        }
+        
+        if (!currentUser) {
+            alert('Please log in to create posts');
+            return;
+        }
+        
+        // Disable button and show loading
+        this.disabled = true;
+        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Posting...';
+        
+        try {
+            const response = await fetch('/api/community/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: content,
+                    author: currentUser
+                })
+            });
+            
+            if (response.ok) {
+                // Clear input and reload posts
+                postInput.value = '';
+                this.disabled = true;
+                this.innerHTML = '<i class="fa fa-check"></i> Posted!';
+                
+                // Reload posts after a short delay
+                setTimeout(() => {
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fa fa-paper-plane" style="margin-right: 5px;"></i> Post';
+                    loadCommunityPosts();
+                }, 2000);
+            } else {
+                const data = await response.json();
+                alert('Failed to create post: ' + (data.message || 'Unknown error'));
+                this.disabled = false;
+                this.innerHTML = '<i class="fa fa-paper-plane" style="margin-right: 5px;"></i> Post';
+            }
+        } catch (error) {
+            console.error('Error creating post:', error);
+            alert('Error creating post. Please try again.');
+            this.disabled = false;
+            this.innerHTML = '<i class="fa fa-paper-plane" style="margin-right: 5px;"></i> Post';
+        }
+    });
+}
+
+// Show empty state
+function showEmptyState(message) {
+    console.log('[Community] Showing empty state:', message);
+    const container = document.getElementById('posts-container');
+    container.innerHTML = `
+        <div class="empty-community">
+            <i class="fa fa-users"></i>
+            <h3>Community is Quiet</h3>
+            <p>${message}</p>
+            <p>Be the first to share your food experience!</p>
+        </div>
+    `;
+}
+
+// Format date
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffInHours = (now - date) / (1000 * 60 * 60);
+    
+    if (diffInHours < 1) {
+        return 'Just now';
+    } else if (diffInHours < 24) {
+        return `${Math.floor(diffInHours)}h ago`;
+    } else if (diffInHours < 168) {
+        return `${Math.floor(diffInHours / 24)}d ago`;
+    } else {
+        return date.toLocaleDateString();
+    }
+}
+
+// Set greeting with username
 function setGreeting() {
     const username = localStorage.getItem('username');
     if (username) {
@@ -121,6 +232,7 @@ function setGreeting() {
     }
 }
 
+// Navigation functionality
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
@@ -135,11 +247,11 @@ function setupNavigation() {
                 case 'Market':
                     window.location.href = 'market.html';
                     break;
-                case 'Photos':
-                    // Already on photos page
+                case 'Scan':
+                    window.location.href = 'scanner.html';
                     break;
-                case 'Help':
-                    window.location.href = 'help.html';
+                case 'Community':
+                    // Already on community page
                     break;
                 case 'Logout':
                     localStorage.removeItem('username');
@@ -148,7 +260,7 @@ function setupNavigation() {
             }
         });
     });
-} 
+}
 
 // Settings panel logic (header icon, fallback)
 let settingsCog = document.querySelector('#header-icons .fa-cog');
@@ -165,7 +277,7 @@ if (settingsCog && settingsPanel && closeSettingsBtn) {
     settingsPanel.addEventListener('click', function(e) {
         if (e.target === settingsPanel) settingsPanel.style.display = 'none';
     });
-} 
+}
 
 // Inject Chatbase chat bubble if user is logged in
 window.addEventListener('DOMContentLoaded', function() {
@@ -186,8 +298,6 @@ window.addEventListener('DOMContentLoaded', function() {
             };
             if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
         })();
-        // Optionally, pass user info to Chatbase if supported
-        // window.chatbase('setUser', { id: username, hash: chatHash });
         // Add custom CSS for chat bubble
         const style = document.createElement('style');
         style.innerHTML = `
@@ -197,7 +307,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 right: 24px !important;
                 position: fixed !important;
                 box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-                transform: scale(0.8); /* Scale down to 80% */
+                transform: scale(0.8);
                 transform-origin: bottom right;
             }
         `;
