@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The grATE App - Nutribot</title>
     <link rel="stylesheet" href="nutribot.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="nutribot-body">
-    <div class="settings-panel" style="display:none;">
-        <div class="settings-panel-content">
-            <button class="close-settings-btn">&times;</button>
-            <h2>Nutribot Page Instructions</h2>
-            <ul>
-                <li>Chat with Nutribot for nutrition advice and food info.</li>
-            </ul>
-        </div>
-    </div>
-    <div id="nutribot-container">
+<body id="dashboard-body">
+    <div id="dashboard-container">
         <!-- Header -->
-        <div id="nutribot-header">
+        <div id="dashboard-header">
             <div id="greeting">
                 <i class="fa fa-lock"></i>
                 <span>Hello</span>
@@ -29,23 +22,31 @@
                 <i class="fa fa-cog"></i>
             </div>
         </div>
-        <!-- Feature Card -->
-        <div id="nutribot-feature-card">
-            <div id="nutribot-feature-text">
-                
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
                 <div>Nutribot</div>
-                <div class="nutribot-feature-desc">Your AI-powered nutrition assistant</div>
+                <div class="promo-desc">Your AI-powered nutrition assistant</div>
             </div>
-            <div id="nutribot-feature-img">
+            <div id="promo-img">
                 <i class="fa fa-comments" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
         </div>
-        <!-- Placeholder Content -->
+        <!-- Main Content -->
         <div id="nutribot-content">
             <div class="empty-state"></div>
             <div class="full-chat">
                 <iframe src="https://www.chatbase.co/chatbot-iframe/Iu25vtQ6ivvPlDF1hx7ih" width="100%" style="height: 500px; max-height: 400px" frameborder="0"></iframe>
             </div>
+        </div>
+    </div>
+    <div class="settings-panel" style="display:none;">
+        <div class="settings-panel-content">
+            <button class="close-settings-btn">&times;</button>
+            <h2>Nutribot Page Instructions</h2>
+            <ul>
+                <li>Chat with Nutribot for nutrition advice and food info.</li>
+            </ul>
         </div>
     </div>
     <!-- Bottom Navigation -->

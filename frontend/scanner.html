@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The grATE App - Scanner</title>
     <link rel="stylesheet" href="scanner.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="scanner-body">
-    <div id="scanner-container">
+<body id="dashboard-body">
+    <div id="dashboard-container">
         <!-- Header -->
-        <div id="scanner-header">
+        <div id="dashboard-header">
             <div id="greeting">
                 <i class="fa fa-lock"></i>
                 <span>Hello</span>
@@ -20,16 +22,44 @@
                 <i class="fa fa-cog"></i>
             </div>
         </div>
-        
-        <!-- New Feature Section Card -->
-        <div id="scanner-feature-card">
-            <div id="scanner-feature-text">
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
                 <div>Scan The Thai FDA Code</div>
-                <div class="scanner-feature-desc">The FDA code is usually on the back of the packaging. Rotate to find the code.</div>
+                <div class="promo-desc">The FDA code is usually on the back of the packaging. Rotate to find the code.</div>
             </div>
-            <div id="scanner-feature-img">
+            <div id="promo-img">
                 <i class="fa fa-magic" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
+        </div>
+        <!-- Main Content -->
+        <div id="qr-scanner">
+            <div class="scanner-frame">
+                <video id="qr-video" autoplay muted playsinline></video>
+                <canvas id="qr-canvas" style="display: none;"></canvas>
+                <div class="scanner-line"></div>
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+            </div>
+            <div class="scanner-text">Position QR code within frame</div>
+        </div>
+        <!-- Photo and Side Buttons -->
+        <div id="photo-buttons-container">
+            <button id="upload-button" title="Upload from storage">
+                <i class="fa fa-upload"></i>
+            </button>
+            <button id="photo-button">
+                <i class="fa fa-camera"></i>
+            </button>
+            <button id="manual-code-button" title="Enter code manually">
+                <i class="fa fa-keyboard"></i>
+            </button>
+        </div>
+        <div id="manual-code-input-container" style="display:none;">
+            <input type="text" id="manual-code-input" placeholder="Enter code" inputmode="numeric" pattern="[0-9]*" maxlength="20" />
+            <button id="submit-code-btn">Submit</button>
         </div>
     </div>
     <div class="settings-panel" style="display:none;">
@@ -42,35 +72,6 @@
             </ul>
         </div>
     </div>
-    <!-- QR Scanner Area -->
-    <div id="qr-scanner">
-        <div class="scanner-frame">
-            <video id="qr-video" autoplay muted playsinline></video>
-            <canvas id="qr-canvas" style="display: none;"></canvas>
-            <div class="scanner-line"></div>
-            <div class="corner top-left"></div>
-            <div class="corner top-right"></div>
-            <div class="corner bottom-left"></div>
-            <div class="corner bottom-right"></div>
-        </div>
-        <div class="scanner-text">Position QR code within frame</div>
-    </div>
-    <!-- Photo and Side Buttons -->
-    <div id="photo-buttons-container">
-        <button id="upload-button" title="Upload from storage">
-            <i class="fa fa-upload"></i>
-        </button>
-        <button id="photo-button">
-            <i class="fa fa-camera"></i>
-        </button>
-        <button id="manual-code-button" title="Enter code manually">
-            <i class="fa fa-keyboard"></i>
-        </button>
-    </div>
-    <div id="manual-code-input-container" style="display:none;">
-        <input type="text" id="manual-code-input" placeholder="Enter code" inputmode="numeric" pattern="[0-9]*" maxlength="20" />
-        <button id="submit-code-btn">Submit</button>
-    </div>
     <!-- Bottom Navigation -->
     <div id="bottom-nav">
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
@@ -79,7 +80,6 @@
         <div class="nav-item"><i class="fa fa-camera-rotate"></i><span>Flip Cam</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
-
     <script src="scanner.js"></script>
 </body>
 </html> 

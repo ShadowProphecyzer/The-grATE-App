@@ -4,32 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The grATE App - Main Screen</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <div id="index-container">
-        <div class="settings-panel" style="display:none;">
-            <div class="settings-panel-content">
-                <button class="close-settings-btn">&times;</button>
-                <h2>Main Screen Instructions</h2>
-                <ul>
-                    <li>Welcome to the grATE App main screen.</li>
-                    <li>Sign in, sign up, or continue as guest to get started.</li>
-                </ul>
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Welcome</span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
             </div>
         </div>
-        <div id="image-container">
-            <img id="food-illustration" src="image.png" alt="Food Illustration" />
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>The grATE App</div>
+                <div class="promo-desc">Eat smart. Live better.</div>
+            </div>
+            <div id="promo-img">
+                <img id="food-illustration" src="image.png" alt="Food Illustration" style="height:60px; border-radius:12px;" />
+            </div>
         </div>
-<!--        <h1 id="app-title">The grATE App</h1>-->
-        <div id="button-group">
-            <button id="sign-in-btn" class="main-action-btn">Sign-in</button>   
-            <button id="sign-up-btn" class="main-action-btn">Sign-up</button>
-            <button id="guest-btn" class="main-action-btn">Guest</button>
+        <!-- Main Action Buttons -->
+        <div id="button-group" style="margin: 32px 0 0 0; display: flex; flex-direction: column; gap: 16px; align-items: center;">
+            <button id="sign-in-btn" class="main-action-btn" style="width: 80%; max-width: 320px;">Sign-in</button>
+            <button id="sign-up-btn" class="main-action-btn" style="width: 80%; max-width: 320px;">Sign-up</button>
+            <button id="guest-btn" class="main-action-btn" style="width: 80%; max-width: 320px;">Guest</button>
         </div>
     </div>
-
+    <div class="settings-panel" style="display:none;">
+        <div class="settings-panel-content">
+            <button class="close-settings-btn">&times;</button>
+            <h2>Main Screen Instructions</h2>
+            <ul>
+                <li>Welcome to the grATE App main screen.</li>
+                <li>Sign in, sign up, or continue as guest to get started.</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+        <div class="nav-item active"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
+        <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item"><i class="fa fa-users"></i><span>Community</span></div>
+        <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
+    </div>
     <script src="index.js"></script>
 </body>
 </html>

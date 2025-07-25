@@ -5,9 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan History - The grATE App</title>
     <link rel="stylesheet" href="history.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="history-body">
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Hello</span>
+                <span id="user-name"></span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
+            </div>
+        </div>
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>Scan History</div>
+                <div class="promo-desc">View your scan and report history</div>
+            </div>
+            <div id="promo-img">
+                <i class="fa fa-history" style="font-size:2.5rem;color:#F26522;"></i>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div id="history-list"></div>
+    </div>
     <div class="settings-panel" style="display:none;">
         <div class="settings-panel-content">
             <button class="close-settings-btn">&times;</button>
@@ -15,18 +42,6 @@
             <ul>
                 <li>View your scan and report history here.</li>
             </ul>
-        </div>
-    </div>
-    <div id="history-main-bg">
-        <div id="history-card">
-            <div id="scanner-header">
-                <div id="greeting"></div>
-                <div id="header-icons">
-                    <i class="fa fa-cog"></i>
-                </div>
-            </div>
-            <h1 id="history-title">Scan History</h1>
-            <div id="history-list"></div>
         </div>
     </div>
     <!-- Modal for full processing info -->
@@ -37,10 +52,11 @@
             <div id="modal-details"></div>
         </div>
     </div>
+    <!-- Bottom Navigation -->
     <div id="bottom-nav">
         <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
         <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
-        <div class="nav-item"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
         <div class="nav-item active"><i class="fa fa-history"></i><span>History</span></div>
         <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>

@@ -11,6 +11,7 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // Add this line
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
+const { Configuration, OpenAIApi } = require('openai');
 
 function authenticateJWT(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -584,6 +585,30 @@ app.post('/api/user/:username/tool-history', authenticateSession, async (req, re
     }
 });
 
+app.post('/api/ingredient-checker', async (req, res) => {
+    try {
+        const { ingredients, options } = req.body;
+        if (!ingredients || !Array.isArray(options)) {
+            return res.status(400).json({ error: 'Ingredients and options are required.' });
+        }
+        // Build a prompt for GPT-4o
+        const prompt = `You are an expert food ingredient checker. A user has entered the following ingredients: ${ingredients}.\nThey want to check for: ${options.join(', ')}.\nFor each option, list any ingredients that violate it, and explain why. If all are safe, say so. Be concise and clear.`;
+        const completion = await openai.createChatCompletion({
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: 'You are a helpful food ingredient checker assistant.' },
+                { role: 'user', content: prompt }
+            ],
+            max_tokens: 400,
+            temperature: 0.2
+        });
+        const result = completion.data.choices[0].message.content;
+        res.json({ result });
+    } catch (error) {
+        console.error('OpenAI error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to check ingredients.' });
+    }
+});
 
 // Initialize database connection and start server
 async function startServer() {

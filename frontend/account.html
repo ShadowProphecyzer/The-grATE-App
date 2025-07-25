@@ -5,26 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account - Sign In / Sign Up</title>
     <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="main-body">
-    <div id="account-container">
-        <div class="settings-panel" style="display:none;">
-            <div class="settings-panel-content">
-                <button class="close-settings-btn">&times;</button>
-                <h2>Account Page Instructions</h2>
-                <ul>
-                    <li>Sign in or sign up to access your account.</li>
-                    <li>Use a valid email and a strong password.</li>
-                    <li>Switch between sign in and sign up using the buttons above.</li>
-                </ul>
+<body id="dashboard-body">
+    <div id="dashboard-container">
+        <!-- Header -->
+        <div id="dashboard-header">
+            <div id="greeting">
+                <i class="fa fa-lock"></i>
+                <span>Account</span>
+            </div>
+            <div id="header-icons">
+                <i class="fa fa-cog"></i>
             </div>
         </div>
-        <div id="image-container">
-            <img id="food-illustration" src="image.png" alt="Food Illustration" />
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
+                <div>Sign In / Sign Up</div>
+                <div class="promo-desc">Access your grATE App account</div>
+            </div>
+            <div id="promo-img">
+                <img id="food-illustration" src="image.png" alt="Food Illustration" style="height:60px; border-radius:12px;" />
+            </div>
         </div>
-        <h1 id="app-title">Welcome to Food Finder</h1>
-        <div id="toggle-group">
+        <!-- Main Content -->
+        <div id="toggle-group" style="margin-bottom: 16px; display: flex; gap: 8px; justify-content: center;">
             <button id="toggle-signin" class="main-action-btn active">Sign In</button>
             <button id="toggle-signup" class="main-action-btn">Sign Up</button>
         </div>
@@ -42,7 +50,25 @@
         <div id="form-message"></div>
         <a href="index.html" id="return-main-link">Return to Main Screen</a>
     </div>
-
+    <div class="settings-panel" style="display:none;">
+        <div class="settings-panel-content">
+            <button class="close-settings-btn">&times;</button>
+            <h2>Account Page Instructions</h2>
+            <ul>
+                <li>Sign in or sign up to access your account.</li>
+                <li>Use a valid email and a strong password.</li>
+                <li>Switch between sign in and sign up using the buttons above.</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+        <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
+        <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item"><i class="fa fa-users"></i><span>Community</span></div>
+        <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
+    </div>
     <script src="account.js"></script>
 </body>
 </html>

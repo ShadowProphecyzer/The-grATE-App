@@ -5,22 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The grATE App - Report</title>
     <link rel="stylesheet" href="report.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="report-body">
-    <div class="settings-panel" style="display:none;">
-        <div class="settings-panel-content">
-            <button class="close-settings-btn">&times;</button>
-            <h2>Report Page Instructions</h2>
-            <ul>
-                <li>Report food safety issues by filling out the form below.</li>
-                <li>Upload up to 3 images and provide details for faster response.</li>
-            </ul>
-        </div>
-    </div>
-    <div id="report-container">
+<body id="dashboard-body">
+    <div id="dashboard-container">
         <!-- Header -->
-        <div id="report-header">
+        <div id="dashboard-header">
             <div id="greeting">
                 <i class="fa fa-lock"></i>
                 <span>Hello</span>
@@ -30,17 +22,17 @@
                 <i class="fa fa-cog"></i>
             </div>
         </div>
-        <!-- Feature Card -->
-        <div id="report-feature-card">
-            <div id="report-feature-text">
+        <!-- Promo Card -->
+        <div id="promo-card">
+            <div id="promo-text">
                 <div>Report</div>
-                <div class="report-feature-desc">Report issues or provide feedback</div>
+                <div class="promo-desc">Report issues or provide feedback</div>
             </div>
-            <div id="report-feature-img">
+            <div id="promo-img">
                 <i class="fa fa-file-invoice" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
         </div>
-        <!-- Placeholder Content -->
+        <!-- Main Content -->
         <div id="report-content">
             <form id="report-form" class="contact-form" enctype="multipart/form-data">
                 <h3>Submit a Report</h3>
@@ -64,6 +56,16 @@
                 <button type="submit" class="contact-btn">Send Report</button>
                 <div id="report-status"></div>
             </form>
+        </div>
+    </div>
+    <div class="settings-panel" style="display:none;">
+        <div class="settings-panel-content">
+            <button class="close-settings-btn">&times;</button>
+            <h2>Report Page Instructions</h2>
+            <ul>
+                <li>Report food safety issues by filling out the form below.</li>
+                <li>Upload up to 3 images and provide details for faster response.</li>
+            </ul>
         </div>
     </div>
     <!-- Bottom Navigation -->
