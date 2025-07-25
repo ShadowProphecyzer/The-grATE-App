@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('[Market] DOMContentLoaded');
     setupNavigation();
     setGreeting();
+    loadMarketProducts();
 });
 
 // Inject Chatbase chat bubble if user is logged in
@@ -93,6 +94,112 @@ function setGreeting() {
             greetingDiv.innerHTML = '<i class="fa fa-lock" style="color:#F26522;"></i> <span>Hello</span> <span id="user-name">' + username + '</span>';
         }
     }
+}
+
+// Load market products
+function loadMarketProducts() {
+    console.log('[Market] Loading market products');
+    const productsContainer = document.getElementById('products-container');
+    
+    const fakeProducts = [
+        {
+            id: 1,
+            name: "Organic Quinoa",
+            price: "$8.99",
+            rating: "4.8 ★",
+            icon: "fa-seedling",
+            badge: "Organic",
+            category: "Grains"
+        },
+        {
+            id: 2,
+            name: "Fresh Avocados",
+            price: "$4.99",
+            rating: "4.9 ★",
+            icon: "fa-apple-alt",
+            badge: "Fresh",
+            category: "Fruits"
+        },
+        {
+            id: 3,
+            name: "Greek Yogurt",
+            price: "$6.49",
+            rating: "4.7 ★",
+            icon: "fa-cheese",
+            badge: "High Protein",
+            category: "Dairy"
+        },
+        {
+            id: 4,
+            name: "Salmon Fillet",
+            price: "$12.99",
+            rating: "4.9 ★",
+            icon: "fa-fish",
+            badge: "Wild Caught",
+            category: "Seafood"
+        },
+        {
+            id: 5,
+            name: "Spinach Bundle",
+            price: "$3.49",
+            rating: "4.6 ★",
+            icon: "fa-leaf",
+            badge: "Local",
+            category: "Vegetables"
+        },
+        {
+            id: 6,
+            name: "Almond Butter",
+            price: "$9.99",
+            rating: "4.8 ★",
+            icon: "fa-nut",
+            badge: "Natural",
+            category: "Nuts"
+        },
+        {
+            id: 7,
+            name: "Sweet Potatoes",
+            price: "$2.99",
+            rating: "4.7 ★",
+            icon: "fa-carrot",
+            badge: "Seasonal",
+            category: "Vegetables"
+        },
+        {
+            id: 8,
+            name: "Chicken Breast",
+            price: "$7.99",
+            rating: "4.8 ★",
+            icon: "fa-drumstick-bite",
+            badge: "Free Range",
+            category: "Meat"
+        }
+    ];
+    
+    const productsHTML = fakeProducts.map(product => `
+        <div class="product-card" data-product-id="${product.id}">
+            ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+            <div class="product-image">
+                <i class="fas ${product.icon}"></i>
+            </div>
+            <div class="product-name">${product.name}</div>
+            <div class="product-price">${product.price}</div>
+            <div class="product-rating">${product.rating}</div>
+        </div>
+    `).join('');
+    
+    productsContainer.innerHTML = productsHTML;
+    
+    // Add click handlers to product cards
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            console.log('[Market] Product clicked:', productId);
+            // You can add navigation to product detail page here
+            alert('Product details coming soon!');
+        });
+    });
 }
 
 // Logout functionality

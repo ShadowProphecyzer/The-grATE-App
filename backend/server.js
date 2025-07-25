@@ -120,22 +120,6 @@ async function createSamplePosts() {
                     comments: [],
                     createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
                     updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000)
-                },
-                {
-                    content: "The nutrition analysis tool is incredible! I scanned a product and got detailed nutritional info instantly. Makes grocery shopping so much easier and healthier! 📊",
-                    author: "NutritionGuru",
-                    likes: ["FoodExplorer", "HealthNut", "ThaiFoodie"],
-                    comments: [],
-                    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
-                    updatedAt: new Date(Date.now() - 8 * 60 * 60 * 1000)
-                },
-                {
-                    content: "Just used the diet recommendations tool and got personalized suggestions based on my profile. The AI really understands my dietary preferences! Highly recommend trying it out! 🎯",
-                    author: "WellnessSeeker",
-                    likes: ["NutritionGuru", "HealthNut"],
-                    comments: [],
-                    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-                    updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000)
                 }
             ];
             
@@ -618,7 +602,6 @@ app.get('/api/user/:username/preferences', async (req, res) => {
 });
 
 // --- User Scan History Endpoint ---
-const { MongoClient, ObjectId } = require('mongodb');
 
 app.get('/api/user/:username/history', authenticateSession, async (req, res) => {
     const username = req.params.username;
@@ -1314,6 +1297,10 @@ app.post('/api/community/posts', async (req, res) => {
         
         if (!content || !author) {
             return res.status(400).json({ error: 'Content and author are required.' });
+        }
+        
+        if (content.length > 500) {
+            return res.status(400).json({ error: 'Post content cannot exceed 500 characters.' });
         }
         
         const postsCollection = dbManager.getCommunityCollection();

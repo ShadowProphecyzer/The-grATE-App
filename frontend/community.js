@@ -127,10 +127,56 @@ function setupLikeButtons() {
 function setupCreatePost() {
     const postInput = document.getElementById('post-input');
     const createPostBtn = document.getElementById('create-post-btn');
+    const charCounter = document.getElementById('char-counter');
+    const showCreatePostBtn = document.getElementById('show-create-post-btn');
+    const createPostModal = document.getElementById('create-post-modal');
+    const closeCreatePostModal = document.getElementById('close-create-post-modal');
     
-    // Enable/disable post button based on input
+    // Show modal when create post button is clicked
+    showCreatePostBtn.addEventListener('click', function() {
+        createPostModal.style.display = 'flex';
+        postInput.focus();
+    });
+    
+    // Close modal when X button is clicked
+    closeCreatePostModal.addEventListener('click', function() {
+        createPostModal.style.display = 'none';
+        postInput.value = '';
+        charCounter.textContent = '0/500 characters';
+        charCounter.style.color = '#666';
+        createPostBtn.disabled = true;
+    });
+    
+    // Close modal when clicking outside
+    createPostModal.addEventListener('click', function(e) {
+        if (e.target === createPostModal) {
+            createPostModal.style.display = 'none';
+            postInput.value = '';
+            charCounter.textContent = '0/500 characters';
+            charCounter.style.color = '#666';
+            createPostBtn.disabled = true;
+        }
+    });
+    
+    // Update character counter and enable/disable post button based on input
     postInput.addEventListener('input', function() {
-        createPostBtn.disabled = !this.value.trim();
+        const currentLength = this.value.length;
+        const maxLength = 500;
+        
+        // Update character counter
+        charCounter.textContent = `${currentLength}/${maxLength} characters`;
+        
+        // Change color based on length
+        if (currentLength > maxLength * 0.9) {
+            charCounter.style.color = '#F26522';
+        } else if (currentLength > maxLength * 0.7) {
+            charCounter.style.color = '#ffa500';
+        } else {
+            charCounter.style.color = '#666';
+        }
+        
+        // Enable/disable post button
+        createPostBtn.disabled = !this.value.trim() || currentLength > maxLength;
     });
     
     // Create post on button click
@@ -140,6 +186,11 @@ function setupCreatePost() {
         
         if (!content) {
             alert('Please enter some content for your post');
+            return;
+        }
+        
+        if (content.length > 500) {
+            alert('Post content cannot exceed 500 characters');
             return;
         }
         
@@ -168,10 +219,13 @@ function setupCreatePost() {
                 this.disabled = true;
                 this.innerHTML = '<i class="fa fa-check"></i> Posted!';
                 
-                // Reload posts after a short delay
+                // Close modal and reload posts after a short delay
                 setTimeout(() => {
+                    createPostModal.style.display = 'none';
                     this.disabled = false;
                     this.innerHTML = '<i class="fa fa-paper-plane" style="margin-right: 5px;"></i> Post';
+                    charCounter.textContent = '0/500 characters';
+                    charCounter.style.color = '#666';
                     loadCommunityPosts();
                 }, 2000);
             } else {

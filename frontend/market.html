@@ -7,6 +7,84 @@
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="community.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 0 20px 20px 20px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+        .products-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .products-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .products-grid::-webkit-scrollbar-thumb {
+            background: #F26522;
+            border-radius: 3px;
+        }
+        .products-grid::-webkit-scrollbar-thumb:hover {
+            background: #d94e0f;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .product-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #F26522, #ff8c42);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .product-name {
+            font-weight: bold;
+            color: #1a2340;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .product-price {
+            color: #F26522;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .product-rating {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #F26522;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .product-card {
+            position: relative;
+        }
+    </style>
 </head>
 <body id="dashboard-body">
     <div id="dashboard-container">
@@ -31,12 +109,16 @@
                 <i class="fa fa-store" style="font-size:2.5rem;color:#F26522;"></i>
             </div>
         </div>
-        <!-- Placeholder Content -->
+        <!-- Market Products -->
         <div id="market-content">
-            <div class="empty-state">
-                <i class="fa fa-store"></i>
-                <h3>Marketplace Coming Soon</h3>
-                <p>Stay tuned for exciting food products and deals!</p>
+            <div class="market-header">
+                <h3 style="margin: 0 20px 15px 20px; color: #1a2340;">
+                    <i class="fa fa-fire" style="color: #F26522; margin-right: 8px;"></i>
+                    Featured Products
+                </h3>
+            </div>
+            <div class="products-grid" id="products-container">
+                <!-- Products will be loaded here -->
             </div>
         </div>
     </div>
