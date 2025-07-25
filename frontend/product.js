@@ -35,7 +35,8 @@ function displayProducts(products) {
     const container = document.getElementById('products-container');
     
     if (!products || products.length === 0) {
-        showEmptyState('No products yet. Start scanning to capture your first product!');
+        // Optionally, you can show a neutral message or leave blank
+        showEmptyState('No products yet.');
         return;
     }
 
@@ -106,12 +107,24 @@ function showEmptyState(message) {
     const container = document.getElementById('products-container');
     container.innerHTML = `
         <div class="empty-state">
-            <i class="fa fa-box"></i>
-            <h3>No Products Yet</h3>
-            <p>${message}</p>
-            <a href="scanner.html" class="scan-btn">
-                <i class="fa fa-qrcode"></i> Start Scanning
-            </a>
+            <h3>FDA Code: 10-3-11523-5-0460<h3>
+
+                    <h3>Type: Import
+                    Category: Food
+                   Subcategory: Some processed foods</h3>
+                    
+                    <h3>Product Name (TH): Potato Crisps Sour Cream and Onion (Pringles brand)
+                    <h3>Product Name (EN): POTATO CRISPS SOUR CREAM AND ONION (PRINGLES (R))
+                    <h3>Product Status: Remain</h3>
+                    
+                    <h3>Licensee Name: Sino-Pacific Trading (Thailand) Co., Ltd.
+                    Place Name: Sino-Pacific Trading (Thailand) Co., Ltd.</h3>
+                    
+                    <h3>Location:
+                    House No. 122/2-3, Nonthri Road, Chong Nonthri Subdistrict, Yan Nawa District, Bangkok 10120
+                    Home Phone: 0 2681 5081</h3>
+                    
+                    <h3>Venue License Status: Remain</h3>
         </div>
     `;
 }

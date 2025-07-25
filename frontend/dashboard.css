@@ -621,3 +621,47 @@ body#dashboard-body, #dashboard-container {
 .nutrient-card-subscription i {
   color: #F26522;
 } 
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 8px;
+  margin: 16px 0 0 0;
+}
+.tools-grid .action-btn {
+  width: 82px;
+  height: 82px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #F26522;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  margin: 0 auto;
+  padding: 0;
+}
+.tools-grid .action-btn i {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+.tools-grid .action-btn span {
+  font-size: 0.85rem;
+  color: #222;
+  font-weight: 500;
+  text-align: center;
+}
+@media (max-width: 500px) {
+  .tools-grid .action-btn {
+    width: 25vw;
+    height: 25vw;
+    min-width: 60px;
+    min-height: 60px;
+    max-width: 90px;
+    max-height: 90px;
+  }
+} 

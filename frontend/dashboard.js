@@ -118,19 +118,23 @@ const recipesCardSection = document.getElementById('recipes-card');
 function showSection(section) {
     // Promo card always visible
     const profileSection = document.getElementById('profile-section');
+    const allToolsSection = document.getElementById('all-tools-section');
     if (section === 'favourites') {
         quickActionsSection && (quickActionsSection.style.display = '');
         recipesCardSection && (recipesCardSection.style.display = '');
         profileSection && (profileSection.style.display = 'none');
+        allToolsSection && (allToolsSection.style.display = 'none');
     } else if (section === 'profile') {
         quickActionsSection && (quickActionsSection.style.display = 'none');
         recipesCardSection && (recipesCardSection.style.display = 'none');
         profileSection && (profileSection.style.display = '');
+        allToolsSection && (allToolsSection.style.display = 'none');
         renderNutritionRadar();
     } else {
         quickActionsSection && (quickActionsSection.style.display = 'none');
         recipesCardSection && (recipesCardSection.style.display = 'none');
         profileSection && (profileSection.style.display = 'none');
+        allToolsSection && (allToolsSection.style.display = '');
     }
 }
 

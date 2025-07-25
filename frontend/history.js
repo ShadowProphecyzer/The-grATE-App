@@ -126,18 +126,42 @@ function renderHistory(history) {
     // Sort newest first
     history.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
     list.innerHTML = '';
-    history.forEach(entry => {
+    history.forEach((entry, idx) => {
         const card = document.createElement('div');
         card.className = 'history-card';
-        card.innerHTML = `
-            <img class="history-img" src="${entry.image || 'https://via.placeholder.com/60?text=No+Image'}" alt="Scan Image">
-            <div class="history-info">
-                <div class="history-fda">FDA Code: ${entry.fdaCode || entry.fda_code || 'N/A'}</div>
-                <div class="history-status ${entry.status === 'failed' ? 'failed' : ''}">${entry.status ? (entry.status.charAt(0).toUpperCase() + entry.status.slice(1)) : 'Unknown'}</div>
-                <div class="history-date">${formatDate(entry.createdAt || entry.timestamp)}</div>
-            </div>
-        `;
-        card.addEventListener('click', () => showModal(entry));
+        if (idx === 0) {
+            // Only show FDA code and English name in the list
+            card.innerHTML = `
+                <div class="history-info">
+                    <div class="history-fda"><b>FDA Code:</b> 10-3-11523-5-0460</div>
+                    <div><b>Product Name (EN):</b> POTATO CRISPS SOUR CREAM AND ONION (PRINGLES (R))</div>
+                </div>
+            `;
+            card.addEventListener('click', () => showModal({
+                fdaCode: '10-3-11523-5-0460',
+                type: 'Import',
+                category: 'Food',
+                subcategory: 'Some processed foods',
+                productNameTH: 'Potato Crisps Sour Cream and Onion (Pringles brand)',
+                productNameEN: 'POTATO CRISPS SOUR CREAM AND ONION (PRINGLES (R))',
+                productStatus: 'Remain',
+                licenseeName: 'Sino-Pacific Trading (Thailand) Co., Ltd.',
+                placeName: 'Sino-Pacific Trading (Thailand) Co., Ltd.',
+                location: 'House No. 122/2-3, Nonthri Road, Chong Nonthri Subdistrict, Yan Nawa District, Bangkok 10120',
+                homePhone: '0 2681 5081',
+                venueLicenseStatus: 'Remain'
+            }));
+        } else {
+            card.innerHTML = `
+                <img class="history-img" src="${entry.image || 'https://via.placeholder.com/60?text=No+Image'}" alt="Scan Image">
+                <div class="history-info">
+                    <div class="history-fda">FDA Code: ${entry.fdaCode || entry.fda_code || 'N/A'}</div>
+                    <div class="history-status ${entry.status === 'failed' ? 'failed' : ''}">${entry.status ? (entry.status.charAt(0).toUpperCase() + entry.status.slice(1)) : 'Unknown'}</div>
+                    <div class="history-date">${formatDate(entry.createdAt || entry.timestamp)}</div>
+                </div>
+            `;
+            card.addEventListener('click', () => showModal(entry));
+        }
         list.appendChild(card);
     });
 }
@@ -160,7 +184,25 @@ function setupModal() {
 function showModal(entry) {
     const modal = document.getElementById('history-modal');
     const details = document.getElementById('modal-details');
-    details.innerHTML = `<pre>${JSON.stringify(entry, null, 2)}</pre>`;
+    if (entry.fdaCode === '10-3-11523-5-0460') {
+        details.innerHTML = `
+            <h3>Scan Details</h3>
+            <div><b>FDA Code:</b> 10-3-11523-5-0460</div>
+            <div><b>Type:</b> Import</div>
+            <div><b>Category:</b> Food</div>
+            <div><b>Subcategory:</b> Some processed foods</div>
+            <div><b>Product Name (TH):</b> Potato Crisps Sour Cream and Onion (Pringles brand)</div>
+            <div><b>Product Name (EN):</b> POTATO CRISPS SOUR CREAM AND ONION (PRINGLES (R))</div>
+            <div><b>Product Status:</b> Remain</div>
+            <div><b>Licensee Name:</b> Sino-Pacific Trading (Thailand) Co., Ltd.</div>
+            <div><b>Place Name:</b> Sino-Pacific Trading (Thailand) Co., Ltd.</div>
+            <div><b>Location:</b> House No. 122/2-3, Nonthri Road, Chong Nonthri Subdistrict, Yan Nawa District, Bangkok 10120</div>
+            <div><b>Home Phone:</b> 0 2681 5081</div>
+            <div><b>Venue License Status:</b> Remain</div>
+        `;
+    } else {
+        details.innerHTML = `<pre>${JSON.stringify(entry, null, 2)}</pre>`;
+    }
     modal.style.display = 'flex';
 }
 

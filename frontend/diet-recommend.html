@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Recommendations</title>
+    <link rel="stylesheet" href="community.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="community-body">
+    <div id="community-main-bg">
+        <div id="community-card">
+            <div id="scanner-header">
+                <div id="greeting"></div>
+                <div id="header-icons">
+                    <i class="fa fa-cog"></i>
+                </div>
+            </div>
+            <h1 id="community-title">Diet Recommendations</h1>
+            <form id="diet-recommend-form">
+                <textarea id="diet-recommend-input" placeholder="Enter your dietary preferences or goals" rows="4" style="width:100%;margin-bottom:10px;"></textarea>
+                <button type="submit" style="width:100%;background:#F26522;color:#fff;border:none;padding:10px 0;border-radius:8px;font-size:1rem;">Get Recommendations</button>
+            </form>
+            <div id="diet-recommend-result" style="margin-top:16px;"></div>
+        </div>
+    </div>
+    <div id="bottom-nav">
+        <div class="nav-item"><i class="fa fa-home"></i><span>Home</span></div>
+        <div class="nav-item"><i class="fa fa-store"></i><span>Market</span></div>
+        <div class="nav-item scan"><i class="fa fa-qrcode"></i><span>Scan</span></div>
+        <div class="nav-item"><i class="fa fa-users"></i><span>Community</span></div>
+        <div class="nav-item"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
+    </div>
+    <script src="diet-recommend.js"></script>
+</body>
+</html> 

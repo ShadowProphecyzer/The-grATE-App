@@ -327,6 +327,28 @@ app.post('/api/user/:username/upload', authenticateSession, multer({ storage: mu
     }
 });
 
+// Add photo to processor queue from base64 (scanner)
+app.post('/api/user/:username/queue-image', async (req, res) => {
+    try {
+        const { username } = req.params;
+        const { imageBase64, filename } = req.body;
+        if (!imageBase64 || !filename) {
+            return res.status(400).json({ message: 'Missing imageBase64 or filename.' });
+        }
+        // Extract base64 data (remove data URL prefix if present)
+        const base64Data = imageBase64.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+        // Ensure queue directory exists
+        const queueDir = path.join(__dirname, '../processor/queue');
+        if (!fs.existsSync(queueDir)) fs.mkdirSync(queueDir, { recursive: true });
+        // Save as JPG file
+        const filePath = path.join(queueDir, filename.replace(/\.png$/, '.jpg'));
+        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+        res.status(201).json({ message: 'Image queued for processing.', filePath });
+    } catch (error) {
+        console.error('Queue image error:', error);
+        res.status(500).json({ message: 'Failed to queue image.' });
+    }
+});
 
 
 // Get user's photos
@@ -537,6 +559,28 @@ app.get('/api/user/:username/products', authenticateSession, async (req, res) =>
     } catch (error) {
         console.error('Get user products error:', error);
         res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
+// Store tool usage history per user
+app.post('/api/user/:username/tool-history', authenticateSession, async (req, res) => {
+    const username = req.params.username;
+    const { tool, input, result } = req.body;
+    if (!tool || !input || !result) {
+        return res.status(400).json({ error: 'tool, input, and result are required' });
+    }
+    try {
+        const toolHistoryCollection = await dbManager.getUserCollection(username, 'tool_history');
+        await toolHistoryCollection.insertOne({
+            tool,
+            input,
+            result,
+            createdAt: new Date()
+        });
+        res.json({ message: 'Tool usage saved.' });
+    } catch (err) {
+        console.error('Error saving tool history:', err);
+        res.status(500).json({ error: 'Failed to save tool history' });
     }
 });
 

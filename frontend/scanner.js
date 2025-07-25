@@ -450,12 +450,29 @@ function takePhoto() {
     .catch(err => {
         console.error('Error saving photo to user collection:', err);
     });
+
+    // Also send image to processor queue
+    fetch(`/api/user/${encodeURIComponent(username)}/queue-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            imageBase64,
+            filename: filename
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Image queued for processing:', data);
+    })
+    .catch(err => {
+        console.error('Error queueing image for processing:', err);
+    });
     
-    // Show loading for 3 seconds, then show success
+    // Hold loading overlay for exactly 5 seconds, then redirect
     setTimeout(() => {
         hideLoadingOverlay();
-        showPhotoFeedback();
-    }, 3000);
+        window.location.href = 'product.html';
+    }, 5000);
 }
 
 function showPhotoFeedback() {
@@ -564,8 +581,61 @@ if (uploadButton) {
                 showFeedback('Invalid file type. Please select an image.', true);
                 return;
             }
-            // TODO: handle the uploaded image file
-            showFeedback('Image selected: ' + file.name, false);
+            // Show loading overlay immediately
+            showLoadingOverlay();
+            // Read file as base64
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageBase64 = event.target.result;
+                const username = localStorage.getItem('username');
+                if (!username) {
+                    showFeedback('No username found. Please sign in.', true);
+                    hideLoadingOverlay();
+                    return;
+                }
+                // Create timestamp for unique filename
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `${username}_uploaded_${timestamp}.png`;
+                // Upload to backend (user's photos collection)
+                fetch(`/api/user/${encodeURIComponent(username)}/photos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        imageBase64,
+                        filename: filename,
+                        source: 'upload'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Photo uploaded to user collection:', data);
+                })
+                .catch(err => {
+                    console.error('Error uploading photo to user collection:', err);
+                });
+                // Also send image to processor queue
+                fetch(`/api/user/${encodeURIComponent(username)}/queue-image`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        imageBase64,
+                        filename: filename
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Image queued for processing:', data);
+                })
+                .catch(err => {
+                    console.error('Error queueing image for processing:', err);
+                });
+                // Hold loading overlay for exactly 5 seconds, then redirect
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    window.location.href = 'product.html';
+                }, 5000);
+            };
+            reader.readAsDataURL(file);
         };
     });
 }
