@@ -147,7 +147,7 @@ Contributing
 
 License
 -------
-ISC License
+All Rights Reserved
 
 Support
 -------
